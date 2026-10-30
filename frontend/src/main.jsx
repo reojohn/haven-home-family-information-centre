@@ -373,12 +373,13 @@ function AppShell(){const {data,loading,error,logout}=useApp();const [mobile,set
     <button type="button" className={`mobile-bottom-link${mobile||loc.pathname.startsWith('/household')||loc.pathname.startsWith('/settings')?' active':''}`} onClick={()=>setMobile(true)} aria-label="Open all pages" aria-expanded={mobile}><Menu size={20} aria-hidden="true"/><span>More</span></button>
   </nav></div><Toast/></div>
 }
-// Optional shared demonstration login. Set the VITE_SHARED_LOGIN_* values in
-// Vercel > Project Settings > Environment Variables before building.
-// WARNING: Vite embeds VITE_* values in public browser JavaScript; they are
-// not server-side secrets. Use only a dedicated account with non-private data.
-const SHARED_LOGIN_EMAIL = String(import.meta.env.VITE_SHARED_LOGIN_EMAIL || '').trim();
-const SHARED_LOGIN_PASSWORD = String(import.meta.env.VITE_SHARED_LOGIN_PASSWORD || '');
+// IMPORTANT: PUBLIC, HARDCODED CLASS DEMONSTRATION LOGIN.
+// Both values below are readable by everyone visiting the deployed website and
+// by anyone with access to this public source repository. Never use them for
+// a personal account or a household containing private information.
+// Remove these values and rotate the account password after your demo.
+const SHARED_LOGIN_EMAIL = 'randohuyan@gmail.com';
+const SHARED_LOGIN_PASSWORD = 'Akatsuki12345';
 const HAS_SHARED_LOGIN = Boolean(SHARED_LOGIN_EMAIL && SHARED_LOGIN_PASSWORD);
 
 function initialAuthForm(){
@@ -439,7 +440,7 @@ function Auth(){
           />
         </div>
       </div>
-      <div className="auth-art-footer"><ShieldCheck size={16}/> Your family space, thoughtfully private.</div>
+      <div className="auth-art-footer"><ShieldCheck size={16}/> Shared classroom demo access.</div>
     </section>
     <section className="auth-form-side" aria-label="Account access">
       <div className="auth-form-glow" aria-hidden="true"/>
@@ -455,7 +456,7 @@ function Auth(){
           <button type="button" aria-pressed={mode==='join'} className={mode==='join'?'chosen':''} onClick={()=>selectMode('join')}>Join family</button>
         </div>
         {HAS_SHARED_LOGIN&&mode==='login'&&<div className="auth-shared-access" role="note">
-          <div className="auth-shared-access-message"><Users size={18} aria-hidden="true"/><div><strong>Shared class sign-in</strong><span>Sign-in details are ready. Everyone using this account shares its household data.</span></div></div>
+          <div className="auth-shared-access-message"><Users size={18} aria-hidden="true"/><div><strong>Shared class sign-in</strong><span>Demo access is shared publicly. Anyone opening this website can sign in and change this account’s household data.</span></div></div>
           <button type="button" className="auth-shared-restore" onClick={resetSharedLogin}>Restore details</button>
         </div>}
         <form onSubmit={submit} className="auth-form">
@@ -467,7 +468,7 @@ function Auth(){
           {(msg||error)&&<div role="alert" className="inline-error"><AlertCircle size={17}/>{msg||error}</div>}
           <Button type="submit" loading={working} className="auth-submit">{working?(mode==='login'?'Signing you in…':mode==='create'?'Creating your family space…':'Joining your family space…'):(mode==='login'?'Continue to Haven':mode==='create'?'Create family space':'Join family space')} {!working&&<ArrowUpRight size={18}/>}</Button>
         </form>
-        <div className="auth-safe"><ShieldCheck size={18}/><span>Private to your household. Your family information is shared only with members of your family space.</span></div>
+        <div className="auth-safe"><ShieldCheck size={18}/><span>Shared demo login: everyone who visits this public site can access the same account. Do not store private information here.</span></div>
         <p className="auth-footnote">A little more connected. A lot more organized.</p>
       </div>
     </section>
