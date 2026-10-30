@@ -3030,3 +3030,39 @@ h1,h2,h3 { text-wrap: balance; }
 @media(prefers-reduced-motion:reduce){
   .device-type-trigger,.device-type-chevron,.device-type-option {transition:none;}
 }
+
+/* Optional shared classroom account: compact, readable alongside every theme. */
+.auth-root .auth-shared-access {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:-12px 0 20px;
+  padding:12px 13px;
+  border:1px solid rgba(40,124,91,.20);
+  border-radius:13px;
+  background:rgba(40,124,91,.065);
+  color:var(--ink,#173d2b);
+}
+.auth-root .auth-shared-access-message { display:flex;align-items:flex-start;gap:10px;flex:1 1 180px;min-width:0; }
+.auth-root .auth-shared-access-message > svg { flex-shrink:0;margin-top:2px;color:#27825a; }
+.auth-root .auth-shared-access-message > div { display:flex;flex-direction:column;gap:3px; }
+.auth-root .auth-shared-access-message strong { font-size:.75rem;line-height:1.35; }
+.auth-root .auth-shared-access-message span { font-size:.70rem;line-height:1.45;color:var(--muted,#617c6f); }
+.auth-root .auth-shared-restore {
+  background:transparent;
+  border:1px solid rgba(40,124,91,.30);
+  border-radius:9px;
+  padding:7px 10px;
+  font-size:.69rem;
+  font-weight:750;
+  color:var(--ink,#235e45);
+  cursor:pointer;
+}
+.auth-root .auth-shared-restore:hover { background:rgba(40,124,91,.09); }
+.auth-root .auth-shared-restore:focus-visible { outline:2px solid #35996d;outline-offset:3px; }
+@media (max-width:480px) {
+  .auth-root .auth-shared-access { margin:-12px 0 15px;padding:10px 11px; }
+  .auth-root .auth-shared-restore { min-height:36px; }
+}

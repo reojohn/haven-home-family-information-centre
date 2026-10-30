@@ -373,15 +373,34 @@ function AppShell(){const {data,loading,error,logout}=useApp();const [mobile,set
     <button type="button" className={`mobile-bottom-link${mobile||loc.pathname.startsWith('/household')||loc.pathname.startsWith('/settings')?' active':''}`} onClick={()=>setMobile(true)} aria-label="Open all pages" aria-expanded={mobile}><Menu size={20} aria-hidden="true"/><span>More</span></button>
   </nav></div><Toast/></div>
 }
+// Optional shared demonstration login. Set the VITE_SHARED_LOGIN_* values in
+// Vercel > Project Settings > Environment Variables before building.
+// WARNING: Vite embeds VITE_* values in public browser JavaScript; they are
+// not server-side secrets. Use only a dedicated account with non-private data.
+const SHARED_LOGIN_EMAIL = String(import.meta.env.VITE_SHARED_LOGIN_EMAIL || '').trim();
+const SHARED_LOGIN_PASSWORD = String(import.meta.env.VITE_SHARED_LOGIN_PASSWORD || '');
+const HAS_SHARED_LOGIN = Boolean(SHARED_LOGIN_EMAIL && SHARED_LOGIN_PASSWORD);
+
+function initialAuthForm(){
+  return {name:'',email:HAS_SHARED_LOGIN?SHARED_LOGIN_EMAIL:'',password:HAS_SHARED_LOGIN?SHARED_LOGIN_PASSWORD:'',household_name:'',invite_code:''};
+}
+
 function Auth(){
   const {acceptBootstrap,toast,error}=useApp();
   const [mode,setMode]=useState('login');
-  const [form,setForm]=useState({name:'',email:'',password:'',household_name:'',invite_code:''});
+  const [form,setForm]=useState(initialAuthForm);
   const [working,setWorking]=useState(false);
   const [msg,setMsg]=useState('');
   const [showPassword,setShowPassword]=useState(false);
   const change=e=>setForm(p=>({...p,[e.target.name]:e.target.value}));
-  const selectMode=next=>{setMode(next);setMsg('');setShowPassword(false)};
+  const resetSharedLogin=()=>setForm(p=>({...p,email:SHARED_LOGIN_EMAIL,password:SHARED_LOGIN_PASSWORD}));
+  const selectMode=next=>{
+    setMode(next);setMsg('');setShowPassword(false);
+    if(!HAS_SHARED_LOGIN)return;
+    // The shared credentials should never carry into registration/join forms.
+    if(next==='login')resetSharedLogin();
+    else if(mode==='login')setForm(p=>({...p,email:'',password:''}));
+  };
   const submit=async e=>{
     e.preventDefault();setMsg('');setWorking(true);
     try{
@@ -435,6 +454,10 @@ function Auth(){
           <button type="button" aria-pressed={mode==='create'} className={mode==='create'?'chosen':''} onClick={()=>selectMode('create')}>Create household</button>
           <button type="button" aria-pressed={mode==='join'} className={mode==='join'?'chosen':''} onClick={()=>selectMode('join')}>Join family</button>
         </div>
+        {HAS_SHARED_LOGIN&&mode==='login'&&<div className="auth-shared-access" role="note">
+          <div className="auth-shared-access-message"><Users size={18} aria-hidden="true"/><div><strong>Shared class sign-in</strong><span>Sign-in details are ready. Everyone using this account shares its household data.</span></div></div>
+          <button type="button" className="auth-shared-restore" onClick={resetSharedLogin}>Restore details</button>
+        </div>}
         <form onSubmit={submit} className="auth-form">
           {mode!=='login'&&<Field label="Your full name" name="name" value={form.name} onChange={change} required minLength={2} autoComplete="name" placeholder="e.g. Alex Santos"/>}
           {mode==='create'&&<Field label="Household name" name="household_name" value={form.household_name} onChange={change} required minLength={2} placeholder="e.g. The Santos Family"/>}
