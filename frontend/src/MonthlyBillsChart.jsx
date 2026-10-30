@@ -1,8 +1,9 @@
 import PremiumSelect from './PremiumSelect.jsx';
-import React, {useMemo,useState} from 'react';
+import React, {useId,useMemo,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {ArrowUpRight,Info} from 'lucide-react';
 import {availableBillTypes,monthlyBillSeries,monthBillCategoryBreakdown} from './billAnalytics.js';
+import './MonthlyBillsChart.css';
 
 const php = value => new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(Number(value)||0);
 const localMonth = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;};
@@ -10,6 +11,8 @@ const localMonth = () => {const d=new Date();return `${d.getFullYear()}-${String
 /** Source: authenticated household's bills from /api/bootstrap. No extra request or schema changes. */
 export default function MonthlyBillsChart({bills=[],compact=false}) {
   const [period,setPeriod]=useState('6');
+  const [dashboardPeriod,setDashboardPeriod]=useState('monthly');
+  const gradientBase=useId().replace(/:/g,'');
   const [year,setYear]=useState(String(new Date().getFullYear()));
   const [type,setType]=useState('all');
   const [status,setStatus]=useState('all');
@@ -19,7 +22,9 @@ export default function MonthlyBillsChart({bills=[],compact=false}) {
   const anchor=localMonth();
   const types=useMemo(()=>availableBillTypes(bills),[bills]);
   const safeType=type==='all'||types.includes(type)?type:'all';
-  const months=compact||period==='6'?6:12;
+  // Compact chart: Monthly = trailing 6 months; Yearly = trailing 12 months.
+  // The full Expenses chart retains its existing period and year filters.
+  const months=compact?(dashboardPeriod==='yearly'?12:6):(period==='6'?6:12);
   const endMonth=!compact&&period==='year'?`${year}-12`:anchor;
   const years=useMemo(()=>[...new Set([anchor.slice(0,4),...(bills||[]).map(b=>String(b.due_date||'').slice(0,4)).filter(v=>/^\d{4}$/.test(v))])].sort((a,b)=>b.localeCompare(a)),[bills,anchor]);
   const rows=useMemo(()=>monthlyBillSeries(bills,{anchor:endMonth,months,type:compact?'all':safeType,status:compact?'all':status}),[bills,endMonth,months,safeType,status,compact]);
@@ -31,20 +36,32 @@ export default function MonthlyBillsChart({bills=[],compact=false}) {
   const hovered=rows.find(r=>r.month===hoveredMonth);
   const categories=useMemo(()=>monthBillCategoryBreakdown(bills,{month:selected?.month,status}),[bills,selected?.month,status]);
   const categoryMax=Math.max(1,...categories.map(r=>r.total));
-  const viewWidth=compact?630:Math.max(700,months*68+80);
-  const left=58,top=20,bottom=46,plotHeight=compact?147:195;
+  const viewWidth=Math.max(compact?700:780,months*71+90);
+  const left=57,top=30,bottom=40,plotHeight=200;
   const viewHeight=top+plotHeight+bottom;
-  const barSpace=(viewWidth-left-20)/rows.length;
-  const scale=Math.max(1,...rows.map(r=>r.total))*1.15;
+  const barSpace=(viewWidth-left-22)/rows.length;
+  // Round the vertical axis to clean monetary ticks rather than arbitrary decimals.
+  const peak=Math.max(1,...rows.map(r=>r.total));
+  const rawStep=peak/4;
+  const order=10**Math.floor(Math.log10(rawStep));
+  const tickStep=([1,2,2.5,5,10].find(n=>n*order>=rawStep)||10)*order;
+  const scale=tickStep*4;
   const baseline=top+plotHeight;
   const y=value=>baseline-value/scale*plotHeight;
+  const formatAxis=value=>value>=1000000?`${+(value/1000000).toFixed(1)}m`:value>=1000?`${+(value/1000).toFixed(1)}k`:`${+value.toFixed(2)}`;
   const reset=fn=>e=>{fn(e.target.value);setSelectedMonth('');};
 
-  return <section className={`panel bill-analytics ${compact?'bill-analytics-compact':''}`} aria-labelledby={compact?'dashboard-bills-chart-title':'expenses-bills-chart-title'}>
+  return <section className={`panel bill-analytics bill-analytics-cinematic ${compact?'bill-analytics-compact':''}`} aria-labelledby={compact?'dashboard-bills-chart-title':'expenses-bills-chart-title'}>
     <div className="panel-top bill-analytics-heading"><div>
       <h2 id={compact?'dashboard-bills-chart-title':'expenses-bills-chart-title'}>{compact?'Monthly bills overview':'Monthly Bills Analytics'}</h2>
-      <p>{compact?'Your household costs over the last six months':'Compare your household bills across months and payment statuses'}</p>
-    </div>{compact&&<Link className="text-link" to="/expenses">View analytics <ArrowUpRight size={15}/></Link>}</div>
+      <p>{compact?`Your household bills across the last ${months} months`:'Compare your household bills across months and payment statuses'}</p>
+    </div>{compact&&<div className="bill-chart-heading-actions">
+      <div className="bill-chart-period-toggle" role="group" aria-label="Monthly bills chart time range">
+        <button type="button" className={dashboardPeriod==='monthly'?'is-active':''} aria-pressed={dashboardPeriod==='monthly'} onClick={()=>{setDashboardPeriod('monthly');setSelectedMonth('');setHoveredMonth('');}}>Monthly</button>
+        <button type="button" className={dashboardPeriod==='yearly'?'is-active':''} aria-pressed={dashboardPeriod==='yearly'} onClick={()=>{setDashboardPeriod('yearly');setSelectedMonth('');setHoveredMonth('');}}>Yearly</button>
+      </div>
+      <Link className="text-link bill-chart-analytics-link" to="/expenses">View analytics <ArrowUpRight size={15}/></Link>
+    </div>}</div>
     {!compact&&<div className="bill-chart-filters">
       <label>Bill type<PremiumSelect aria-label="Filter bill type" value={safeType} onChange={reset(setType)}><option value="all">All bill types</option>{types.map(t=><option value={t} key={t}>{t}</option>)}</PremiumSelect></label>
       <label>Payment status<PremiumSelect aria-label="Filter payment status" value={status} onChange={reset(setStatus)}><option value="all">Paid + unpaid</option><option value="paid">Paid only</option><option value="unpaid">Unpaid only</option></PremiumSelect></label>
@@ -53,34 +70,45 @@ export default function MonthlyBillsChart({bills=[],compact=false}) {
     </div>}
     <div className="bill-chart-summary"><div><span>Total recorded in period</span><strong>{php(total)}</strong></div><div className="bill-chart-legend"><span><i className="bill-legend-dot paid"/>Paid {php(paid)}</span><span><i className="bill-legend-dot unpaid"/>Unpaid {php(unpaid)}</span></div></div>
     <div className="bill-chart-scroll" role="region" aria-label="Scrollable monthly bill chart" tabIndex={0}>
-      <svg className="bill-chart-svg" style={{minWidth:compact?470:(months===12?780:540)}} viewBox={`0 0 ${viewWidth} ${viewHeight}`} role="group" aria-label={`Monthly bill amounts by due date: ${rows.map(r=>`${r.longLabel} ${php(r.total)}`).join('; ')}`}>
-        {Array.from({length:5},(_,j)=>{const amount=scale*j/4,ty=y(amount);return <g key={j}><line className="bill-chart-grid" x1={left} x2={viewWidth-18} y1={ty} y2={ty}/><text className="bill-chart-axis" x={left-9} y={ty+4} textAnchor="end">{amount>=1000?`${(amount/1000).toFixed(1)}k`:Math.round(amount)}</text></g>;})}
+      <svg className="bill-chart-svg" style={{minWidth:compact?(months===12?750:470):(months===12?780:540)}} viewBox={`0 0 ${viewWidth} ${viewHeight}`} role="group" aria-label={`Monthly bill totals by due date: ${rows.map(r=>`${r.longLabel} ${php(r.total)}`).join('; ')}`}>
+        <defs>
+          <linearGradient id={`${gradientBase}-idle`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" className="bill-chart-idle-top"/><stop offset="55%" className="bill-chart-idle-middle"/><stop offset="100%" className="bill-chart-idle-bottom"/>
+          </linearGradient>
+          <linearGradient id={`${gradientBase}-active`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#15c58a"/><stop offset="32%" stopColor="#48d7a1"/><stop offset="68%" stopColor="#a4e9cc"/><stop offset="100%" stopColor="#effaf4"/>
+          </linearGradient>
+        </defs>
+        {Array.from({length:5},(_,j)=>{const amount=tickStep*j,ty=y(amount);return <g key={j}><line className="bill-chart-grid" x1={left} x2={viewWidth-18} y1={ty} y2={ty}/><text className="bill-chart-axis" x={left-12} y={ty+4} textAnchor="end">{formatAxis(amount)}</text></g>;})}
         {rows.map((r,i)=>{
-          const bw=barSpace*.54,bx=left+i*barSpace+barSpace*.23;
-          const ph=r.paid/scale*plotHeight,uh=r.unpaid/scale*plotHeight;
+          const bw=Math.min(70,barSpace*.59),bx=left+i*barSpace+(barSpace-bw)/2;
+          const h=r.total/scale*plotHeight;
+          const active=r.month===(hoveredMonth||selected?.month);
           const chosen=r.month===selected?.month;
-          const hovered=r.month===hoveredMonth;
-          return <g key={r.month} className={`bill-chart-bar-group ${chosen?'is-selected':''} ${hovered?'is-hovered':''}`} role="button" tabIndex={0} aria-label={`${r.longLabel}: ${r.count} bills; ${php(r.paid)} paid; ${php(r.unpaid)} unpaid`} aria-pressed={chosen} onMouseEnter={()=>setHoveredMonth(r.month)} onMouseLeave={()=>setHoveredMonth('')} onFocus={()=>setHoveredMonth(r.month)} onBlur={()=>setHoveredMonth('')} onClick={()=>setSelectedMonth(r.month)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelectedMonth(r.month);}}}>
-            {(chosen||hovered)&&<rect className="bill-chart-selected-band" x={bx-8} y={top} width={bw+16} height={plotHeight+19} rx="5"/>}
-            <rect x={bx-7} y={top} width={bw+14} height={plotHeight+21} fill="transparent"/>
-            {ph>0&&<rect className="bill-chart-paid" x={bx} y={baseline-ph} width={bw} height={ph} rx="3"/>}
-            {uh>0&&<rect className="bill-chart-unpaid" x={bx} y={baseline-ph-uh} width={bw} height={uh} rx="3"/>}
-            {!r.total&&<rect className="bill-chart-zero" x={bx} y={baseline-2} width={bw} height="2" rx="1"/>}
-            <text className="bill-chart-month-label" x={bx+bw/2} y={baseline+22} textAnchor="middle">{r.label}</text>
+          return <g key={r.month} className={`bill-chart-bar-group ${chosen?'is-selected':''} ${active?'is-hovered':''}`} role="button" tabIndex={0} aria-label={`${r.longLabel}: ${r.count} bills; total ${php(r.total)}; ${php(r.paid)} paid; ${php(r.unpaid)} unpaid`} aria-pressed={chosen} onMouseEnter={()=>setHoveredMonth(r.month)} onMouseLeave={()=>setHoveredMonth('')} onFocus={()=>setHoveredMonth(r.month)} onBlur={()=>setHoveredMonth('')} onClick={()=>setSelectedMonth(r.month)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelectedMonth(r.month);}}}>
+            <rect className="bill-chart-hit-target" x={left+i*barSpace} y={top-8} width={barSpace} height={plotHeight+36}/>
+            {r.total>0&&<rect className="bill-chart-column" x={bx} y={baseline-h} width={bw} height={h} rx={Math.min(9,h/2)} fill={`url(#${gradientBase}-${active?'active':'idle'})`}/>}
+            {!r.total&&<rect className="bill-chart-zero" x={bx+4} y={baseline-2} width={bw-8} height="2" rx="1"/>}
+            {active&&r.total>0&&<g className="bill-chart-highlight-point"><circle cx={bx+bw/2} cy={baseline-h+3} r="11" className="bill-chart-marker-outer"/><circle cx={bx+bw/2} cy={baseline-h+3} r="6.5" className="bill-chart-marker-inner"/></g>}
+            <text className="bill-chart-month-label" x={bx+bw/2} y={baseline+23} textAnchor="middle">{r.label}</text>
             <title>{r.longLabel}: {php(r.total)} total ({php(r.paid)} paid, {php(r.unpaid)} unpaid)</title>
           </g>;
         })}
         {hovered&&(()=>{
           const index=rows.findIndex(r=>r.month===hovered.month);
-          const bx=left+index*barSpace+barSpace*.23;
-          const tx=Math.max(left+4,Math.min(viewWidth-204,bx+barSpace*.5-99));
-          return <g className="bill-chart-hover-tooltip" pointerEvents="none" transform={`translate(${tx} ${top+7})`}>
-            <rect width="198" height="95" rx="9" className="bill-chart-tooltip-box"/>
-            <text x="11" y="19" className="bill-chart-tooltip-title">{hovered.longLabel}</text>
-            <text x="11" y="39" className="bill-chart-tooltip-line">Total: {php(hovered.total)}</text>
-            <text x="11" y="56" className="bill-chart-tooltip-line">Paid: {php(hovered.paid)}</text>
-            <text x="11" y="73" className="bill-chart-tooltip-line">Unpaid: {php(hovered.unpaid)}</text>
-            <text x="11" y="88" className="bill-chart-tooltip-caption">{hovered.count} {hovered.count===1?'bill':'bills'} · Click for details</text>
+          const bw=Math.min(70,barSpace*.59);
+          const bx=left+index*barSpace+(barSpace-bw)/2;
+          const tooltipWidth=187;
+          // Place the tooltip beside the highlighted column without clipping either edge.
+          const tx=bx+bw+12+tooltipWidth<=viewWidth-9?bx+bw+12:Math.max(left+6,bx-tooltipWidth-12);
+          const ty=Math.max(10,Math.min(95,y(hovered.total)-15));
+          return <g className="bill-chart-hover-tooltip" pointerEvents="none" transform={`translate(${tx} ${ty})`}>
+            <rect width={tooltipWidth} height="97" rx="12" className="bill-chart-tooltip-box"/>
+            <text x="12" y="20" className="bill-chart-tooltip-title">{hovered.longLabel}</text>
+            <text x="12" y="42" className="bill-chart-tooltip-line">Total<tspan x="176" textAnchor="end">{php(hovered.total)}</tspan></text>
+            <text x="12" y="59" className="bill-chart-tooltip-line">Paid<tspan x="176" textAnchor="end">{php(hovered.paid)}</tspan></text>
+            <text x="12" y="76" className="bill-chart-tooltip-line">Unpaid<tspan x="176" textAnchor="end">{php(hovered.unpaid)}</tspan></text>
+            <text x="12" y="90" className="bill-chart-tooltip-caption">{hovered.count} {hovered.count===1?'bill':'bills'} · Select for details</text>
           </g>;
         })()}
       </svg>
@@ -101,6 +129,6 @@ export default function MonthlyBillsChart({bills=[],compact=false}) {
       </div>:<p className="bill-chart-empty">No bills for this month and payment filter.</p>)}
     </div>}
     {!hasBills&&<p className="bill-chart-empty">No bills due within the selected period and filters.</p>}
-    <p className="bill-chart-note"><Info size={15}/> Chart uses bill <strong>due dates</strong>. Paid/unpaid reflects current recorded status, not a payment transaction.</p>
+    <p className="bill-chart-note"><Info size={15}/> Bars show monthly bill totals by <strong>due date</strong>. Hover or select a month to see paid/unpaid amounts. Status reflects the recorded bill, not a payment transaction.</p>
   </section>;
 }

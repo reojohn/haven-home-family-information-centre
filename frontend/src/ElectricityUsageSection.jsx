@@ -12,33 +12,92 @@ const dateLabel = (month, opts = {month:'short', year:'2-digit'}) => {
 };
 const usageText = n => `${new Intl.NumberFormat('en-PH', {maximumFractionDigits:1}).format(Number(n) || 0)} kWh`;
 
+
+function buildSmoothPath(points) {
+  if (!points.length) return '';
+  if (points.length === 1) {
+    const p = points[0];
+    return `M ${p.x} ${p.y}`;
+  }
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+
 function UsageTrend({records, selected, onSelect}) {
   if (!records.length) return <div className="electricity-empty-graph"><BarChart3 size={31}/><strong>No electricity readings yet</strong><span>Record a monthly reading to start your consumption history.</span></div>;
 
   const values = records.map(r => Number(r.kwh) || 0);
-  const peak = Math.max(1, ...values);
-  const max = peak * 1.15;
-  const left = 40, top = 24, width = 800, height = 186;
-  const coords = records.map((r, i) => ({
-    x: left + (records.length === 1 ? width / 2 : i * width / (records.length - 1)),
-    y: top + height * (1 - clamp((Number(r.kwh)||0) / max, 0, 1)),
-    month: r.month, kwh: Number(r.kwh)||0
-  }));
-  const line = coords.map(({x,y}) => `${x},${y}`).join(' ');
-  const area = `${coords[0].x},${top + height} ${line} ${coords.at(-1).x},${top + height}`;
-  const labelStep = Math.max(1, Math.ceil(records.length / 6));
-  return <div className="electricity-chart-wrap">
-    <svg className="electricity-usage-svg" viewBox="0 0 900 256" preserveAspectRatio="xMidYMid meet" role="img"
-      aria-label={`Monthly electricity usage trend from ${dateLabel(records[0].month)} through ${dateLabel(records.at(-1).month)}. Select a month below for exact readings.`}>
-      <defs><linearGradient id="electricityAreaFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="var(--electricity-accent)" stopOpacity=".3"/><stop offset="100%" stopColor="var(--electricity-accent)" stopOpacity=".015"/></linearGradient></defs>
-      {[0, 0.5, 1].map((part,i) => <g key={part}>
-        <line x1={left} x2={left+width} y1={top+height*part} y2={top+height*part} stroke="var(--electricity-grid)" strokeDasharray="5 6"/>
-        <text x={left-12} y={top+height*part+4} textAnchor="end" fill="var(--muted)" fontSize="12">{Math.round(max * (1-part))}</text>
-      </g>)}
-      <polygon points={area} fill="url(#electricityAreaFill)"/>
-      <polyline points={line} fill="none" stroke="var(--electricity-accent)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-      {coords.map((p,i) => <circle key={p.month} cx={p.x} cy={p.y} r={selected === p.month ? 7 : 4} fill={selected === p.month?'var(--electricity-highlight)':'var(--electricity-accent)'} stroke="var(--surface)" strokeWidth="2" pointerEvents="none"><title>{`${dateLabel(p.month, {month:'long',year:'numeric'})}: ${usageText(p.kwh)}`}</title></circle>)}
-      {coords.map((p,i) => (i%labelStep===0 || i===coords.length-1) && <text key={p.month} x={p.x} y="241" textAnchor="middle" fill="var(--muted)" fontSize="12">{dateLabel(p.month)}</text>)}
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const spread = Math.max(1, max - min);
+  const left = 56, top = 26, width = 800, lineHeight = 110, waveTop = 68, waveHeight = 78, timelineY = 214, monthLabelY = 192;
+  const normalize = value => (value - min) / spread;
+  const coords = records.map((r, i) => {
+    const amount = Number(r.kwh) || 0;
+    const ratio = normalize(amount);
+    const x = left + (records.length === 1 ? width / 2 : i * width / Math.max(1, records.length - 1));
+    const y = top + lineHeight * (0.82 - ratio * 0.64);
+    const waveY = waveTop + waveHeight * (0.9 - ratio * 0.78);
+    return {x, y, waveY, month: r.month, kwh: amount};
+  });
+  const linePath = buildSmoothPath(coords.map(({x, y}) => ({x, y})));
+  const wavePoints = coords.map(({x, waveY}) => ({x, y: waveY}));
+  const wavePath = `${buildSmoothPath(wavePoints)} L ${wavePoints.at(-1).x} ${waveTop + waveHeight + 26} L ${wavePoints[0].x} ${waveTop + waveHeight + 26} Z`;
+  const selectedPoint = coords.find(point => point.month === selected) || coords.at(-1);
+
+  return <div className="electricity-chart-wrap electricity-wave-card">
+    <svg className="electricity-usage-svg electricity-wave-svg" viewBox="0 0 900 258" preserveAspectRatio="xMidYMid meet" role="img"
+      aria-label={`Monthly electricity usage trend from ${dateLabel(records[0].month, {month:'long'})} through ${dateLabel(records.at(-1).month, {month:'long'})}. Select a month below for exact readings.`}>
+      <defs>
+        <linearGradient id="electricityWaveFill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="var(--electricity-wave)" stopOpacity="0.9"/>
+          <stop offset="55%" stopColor="var(--electricity-wave)" stopOpacity="0.42"/>
+          <stop offset="100%" stopColor="var(--electricity-wave)" stopOpacity="0"/>
+        </linearGradient>
+        <linearGradient id="electricityLineGlow" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="var(--electricity-line)" stopOpacity="1"/>
+          <stop offset="100%" stopColor="var(--electricity-line)" stopOpacity=".93"/>
+        </linearGradient>
+        <filter id="electricityWaveBlur" x="-15%" y="-35%" width="130%" height="190%">
+          <feGaussianBlur stdDeviation="10"/>
+        </filter>
+        <filter id="electricityPointGlow" x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <text x="450" y="18" textAnchor="middle" className="electricity-svg-overline">MONTHLY ENERGY</text>
+      <line x1={left} x2={left + width} y1={timelineY} y2={timelineY} className="electricity-timeline"/>
+
+      <path d={wavePath} fill="url(#electricityWaveFill)" filter="url(#electricityWaveBlur)" className="electricity-wave-fill"/>
+      <path d={wavePath} fill="url(#electricityWaveFill)" className="electricity-wave-fill electricity-wave-fill-solid"/>
+      <path d={linePath} fill="none" stroke="url(#electricityLineGlow)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" className="electricity-wave-line"/>
+
+      {selectedPoint && <>
+        <line x1={selectedPoint.x} x2={selectedPoint.x} y1={40} y2={selectedPoint.y + 10} className="electricity-selection-line"/>
+        <text x={selectedPoint.x} y="34" textAnchor="middle" className="electricity-selected-value">{Math.round(selectedPoint.kwh)}</text>
+      </>}
+
+      {coords.map(point => {
+        const isSelected = selectedPoint?.month === point.month;
+        return <g key={point.month}>
+          <circle cx={point.x} cy={point.y} r={isSelected ? 9 : 6.5} className={isSelected ? 'electricity-line-point electricity-line-point-selected' : 'electricity-line-point'} filter={isSelected ? 'url(#electricityPointGlow)' : undefined}><title>{`${dateLabel(point.month, {month:'long', year:'numeric'})}: ${usageText(point.kwh)}`}</title></circle>
+          <text x={point.x} y={monthLabelY} textAnchor="middle" className={isSelected ? 'electricity-month-label electricity-month-label-selected' : 'electricity-month-label'}>{dateLabel(point.month, {month:'short'})}</text>
+          <circle cx={point.x} cy={timelineY} r={isSelected ? 5 : 3.8} className={isSelected ? 'electricity-timeline-dot electricity-timeline-dot-selected' : 'electricity-timeline-dot'} />
+        </g>;
+      })}
     </svg>
     <div className="electricity-trend-footer">
       <span>Consumption in kWh</span>

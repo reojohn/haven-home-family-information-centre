@@ -1,0 +1,290 @@
+/* Haven Home · Monthly bills chart.
+   Theme-aware cinematic bars: high-contrast charcoal in Light mode,
+   light mint-neutral in Dark and Haven Luxe. Scoped only to this component.
+   Light/Dark intensity uses the same --theme-light variable as the app. */
+.bill-analytics.bill-analytics-cinematic {
+  --bills-paid: #26996f;
+  --bills-unpaid: #8ebfac;
+  --bills-card-bg: radial-gradient(ellipse at 43% 46%, #ffffff, #f6faf7 72%, #f1f7f3);
+  --bills-border: #dce9df;
+  --bills-border-hover: #bbd8c7;
+  --bills-ink: #183128;
+  --bills-muted: #597366;
+  --bills-soft-ink: #3f6351;
+  --bills-axis: #708a7b;
+  --bills-grid: rgba(57, 111, 79, .14);
+  --bills-idle-top: #222a26;
+  --bills-idle-middle: #344039;
+  --bills-idle-bottom: #53645a;
+  --bills-tooltip-bg: #ffffff;
+  --bills-tooltip-border: #c9dbce;
+  --bills-tooltip-ink: #173429;
+  --bills-tooltip-caption: #577665;
+  --bills-tooltip-shadow: rgba(29, 71, 48, .17);
+  --bills-filter-bg: rgba(236, 246, 239, .78);
+  --bills-filter-border: #d7e8dc;
+  --bills-toggle-bg: #eef5ef;
+  --bills-toggle-border: #cfe3d5;
+  --bills-toggle-text: #496656;
+  --bills-toggle-hover: #deede3;
+  --bills-toggle-active-bg: linear-gradient(135deg, #1f805a, #2d9e72);
+  --bills-toggle-active-text: #ffffff;
+  --bills-link: #1f7655;
+  --bills-link-hover: #14563d;
+  --bills-button-bg: #e9f5ed;
+  --bills-button-text: #205b42;
+  --bills-category-bg: #f2f8f4;
+  --bills-track-bg: #e1ede5;
+  --bills-marker-ring: #f6fff9;
+  --bills-marker-stroke: #359b72;
+  background: var(--bills-card-bg);
+  border: 1px solid var(--bills-border);
+  box-shadow: 0 16px 40px rgba(18, 64, 39, .06);
+  color: var(--bills-ink);
+  overflow: hidden;
+}
+/* The real application uses data-theme="fluid" for BOTH Light and Dark and
+   every slider value between them. This interpolates the complete chart. */
+:root[data-theme="fluid"] .bill-analytics.bill-analytics-cinematic {
+  --bills-paid: color-mix(in srgb, #26996f var(--theme-light), #3bcc93);
+  --bills-unpaid: color-mix(in srgb, #8ebfac var(--theme-light), #a4dec7);
+  --bills-card-bg: radial-gradient(ellipse at 43% 46%,
+    color-mix(in srgb, #ffffff var(--theme-light), #303735) 0%,
+    color-mix(in srgb, #f6faf7 var(--theme-light), #252b29) 72%,
+    color-mix(in srgb, #f1f7f3 var(--theme-light), #202624) 100%);
+  --bills-border: color-mix(in srgb, #dce9df var(--theme-light), #39433e);
+  --bills-border-hover: color-mix(in srgb, #bbd8c7 var(--theme-light), #506457);
+  --bills-ink: var(--fluid-ink);
+  --bills-muted: var(--fluid-muted);
+  --bills-soft-ink: var(--fluid-muted);
+  --bills-axis: var(--fluid-muted);
+  --bills-grid: color-mix(in srgb, rgba(57, 111, 79, .14) var(--theme-light), rgba(186, 211, 195, .12));
+  /* Fluid sliders have a continuous background, but the idle bars must stay
+     decisively opposite in lightness to retain contrast. The switch happens
+     just below the midpoint so bars never blend into mid-tone surfaces. */
+  --bills-idle-dark-share: clamp(0%, calc((var(--theme-light) - 47%) * 100), 100%);
+  --bills-idle-top: color-mix(in srgb, #222a26 var(--bills-idle-dark-share), #ecf8f0);
+  --bills-idle-middle: color-mix(in srgb, #344039 var(--bills-idle-dark-share), #d3e7da);
+  --bills-idle-bottom: color-mix(in srgb, #53645a var(--bills-idle-dark-share), #b0cabb);
+  --bills-tooltip-bg: color-mix(in srgb, #ffffff var(--theme-light), #414744);
+  --bills-tooltip-border: color-mix(in srgb, #c9dbce var(--theme-light), #5b6a60);
+  --bills-tooltip-ink: var(--fluid-ink);
+  --bills-tooltip-caption: var(--fluid-muted);
+  --bills-tooltip-shadow: color-mix(in srgb, rgba(29, 71, 48, .17) var(--theme-light), rgba(0, 0, 0, .36));
+  --bills-filter-bg: color-mix(in srgb, #ecf6ef var(--theme-light), #212c26);
+  --bills-filter-border: color-mix(in srgb, #d7e8dc var(--theme-light), #45584c);
+  --bills-toggle-bg: color-mix(in srgb, #eef5ef var(--theme-light), #191f1c);
+  --bills-toggle-border: color-mix(in srgb, #cfe3d5 var(--theme-light), #414b43);
+  --bills-toggle-text: var(--fluid-muted);
+  --bills-toggle-hover: color-mix(in srgb, #deede3 var(--theme-light), #35463c);
+  --bills-toggle-active-bg: linear-gradient(140deg, #1f805a, #37ae7d);
+  --bills-toggle-active-text: #ffffff;
+  --bills-link: var(--fluid-accent-strong);
+  --bills-link-hover: var(--fluid-accent);
+  --bills-button-bg: color-mix(in srgb, #e9f5ed var(--theme-light), #34463b);
+  --bills-button-text: var(--fluid-ink);
+  --bills-category-bg: color-mix(in srgb, #f2f8f4 var(--theme-light), #29362f);
+  --bills-track-bg: color-mix(in srgb, #e1ede5 var(--theme-light), #1d2620);
+  --bills-marker-ring: #f6fff9;
+  --bills-marker-stroke: color-mix(in srgb, #359b72 var(--theme-light), #7bcbaa);
+  background: var(--bills-card-bg);
+  border-color: var(--bills-border);
+  color: var(--bills-ink);
+}
+/* Haven Luxe keeps its glass-house appearance; the selected bar stays GREEN,
+   intentionally not using the theme's gold accent. */
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic {
+  --bills-paid: #3bcc93;
+  --bills-unpaid: #a4dec7;
+  --bills-card-bg: linear-gradient(145deg, rgba(46, 53, 56, .89), rgba(20, 31, 36, .90));
+  --bills-border: rgba(245, 238, 219, .25);
+  --bills-border-hover: rgba(247, 224, 191, .46);
+  --bills-ink: #f8faf5;
+  --bills-muted: #d2e2d9;
+  --bills-soft-ink: #d9eadc;
+  --bills-axis: #a9bab0;
+  --bills-grid: rgba(213, 227, 215, .13);
+  --bills-idle-top: #ecf6ee;
+  --bills-idle-middle: #d6e5d8;
+  --bills-idle-bottom: #b4cabd;
+  --bills-tooltip-bg: #343f3e;
+  --bills-tooltip-border: #617b6d;
+  --bills-tooltip-ink: #f3fff5;
+  --bills-tooltip-caption: #d2e4d9;
+  --bills-tooltip-shadow: rgba(0, 0, 0, .48);
+  --bills-filter-bg: rgba(25, 38, 36, .78);
+  --bills-filter-border: rgba(197, 222, 202, .26);
+  --bills-toggle-bg: rgba(20, 29, 27, .74);
+  --bills-toggle-border: rgba(214, 236, 220, .25);
+  --bills-toggle-text: #d5e5dc;
+  --bills-toggle-hover: rgba(77, 114, 91, .36);
+  --bills-toggle-active-bg: linear-gradient(140deg, #2a9e70, #4fd99f);
+  --bills-toggle-active-text: #102c21;
+  --bills-link: #abebc7;
+  --bills-link-hover: #ddffea;
+  --bills-button-bg: #34493d;
+  --bills-button-text: #f6fff8;
+  --bills-category-bg: rgba(27, 43, 38, .83);
+  --bills-track-bg: #1d2925;
+  --bills-marker-ring: #f6fff9;
+  --bills-marker-stroke: #79d2a7;
+  background: var(--bills-card-bg);
+  border-color: var(--bills-border);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, .24), inset 0 1px rgba(255, 255, 255, .10);
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
+  color: var(--bills-ink);
+}
+.bill-analytics.bill-analytics-cinematic:hover { border-color: var(--bills-border-hover); }
+.bill-analytics.bill-analytics-cinematic .bill-analytics-heading { align-items: flex-start; margin-bottom: 16px; }
+.bill-analytics.bill-analytics-cinematic .bill-analytics-heading h2 {
+  color: var(--bills-ink); font-weight: 700; font-size: 1rem; letter-spacing: -.025em;
+}
+.bill-analytics.bill-analytics-cinematic .bill-analytics-heading p { color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-heading-actions {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 11px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle {
+  display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+  background: var(--bills-toggle-bg); border: 1px solid var(--bills-toggle-border); border-radius: 99px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle button {
+  min-width: 76px; min-height: 32px; padding: 5px 13px;
+  border: 0; border-radius: 99px; background: transparent; color: var(--bills-toggle-text);
+  font: inherit; font-size: .72rem; font-weight: 740; cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle button:hover {
+  color: var(--bills-ink); background: var(--bills-toggle-hover);
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle button.is-active {
+  color: var(--bills-toggle-active-text); background: var(--bills-toggle-active-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle button:focus-visible,
+.bill-analytics.bill-analytics-cinematic .bill-chart-analytics-link:focus-visible {
+  outline: 2px solid var(--bills-paid); outline-offset: 3px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-analytics-link { color: var(--bills-link); font-weight: 700; font-size: .76rem; }
+.bill-analytics.bill-analytics-cinematic .bill-chart-analytics-link:hover { color: var(--bills-link-hover); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-summary { align-items: flex-end; margin: 2px 0 4px; }
+.bill-analytics.bill-analytics-cinematic .bill-chart-summary > div:first-child span { color: var(--bills-muted); font-weight: 500; }
+.bill-analytics.bill-analytics-cinematic .bill-chart-summary strong {
+  color: var(--bills-ink); font-size: clamp(1.65rem, 2.5vw, 2.25rem); letter-spacing: -.045em;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-legend { color: var(--bills-soft-ink); font-size: .7rem; }
+.bill-analytics.bill-analytics-cinematic .bill-legend-dot { border-radius: 50%; }
+.bill-analytics.bill-analytics-cinematic .bill-legend-dot.paid { background: var(--bills-paid); }
+.bill-analytics.bill-analytics-cinematic .bill-legend-dot.unpaid { background: var(--bills-unpaid); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-scroll,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-scroll {
+  position: relative; background: transparent; border: 0; border-radius: 12px; padding: 5px 0 2px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-scroll:focus-visible { outline-color: var(--bills-paid); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-svg { color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-grid {
+  stroke: var(--bills-grid); stroke-dasharray: 2 7; stroke-width: 1px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-axis { fill: var(--bills-axis); font-size: 11px; }
+.bill-analytics.bill-analytics-cinematic .bill-chart-month-label {
+  fill: var(--bills-soft-ink); font-size: 12px; font-weight: 650;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-bar-group.is-selected .bill-chart-month-label,
+.bill-analytics.bill-analytics-cinematic .bill-chart-bar-group.is-hovered .bill-chart-month-label {
+  fill: var(--bills-ink); font-weight: 800;
+}
+/* SVG gradient stops are CSS driven so changing the theme updates bars live. */
+.bill-analytics.bill-analytics-cinematic .bill-chart-idle-top { stop-color: var(--bills-idle-top); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-idle-middle { stop-color: var(--bills-idle-middle); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-idle-bottom { stop-color: var(--bills-idle-bottom); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-column {
+  transition: filter .2s ease, opacity .2s ease; filter: drop-shadow(0 4px 7px rgba(0, 0, 0, .10));
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-bar-group.is-hovered .bill-chart-column {
+  filter: drop-shadow(0 0 10px rgba(51, 181, 126, .24));
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-hit-target { fill: transparent; }
+.bill-analytics.bill-analytics-cinematic .bill-chart-marker-outer {
+  fill: var(--bills-marker-ring); stroke: var(--bills-marker-stroke); stroke-width: 2.5px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .24));
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-marker-inner { fill: #28c88e; }
+.bill-analytics.bill-analytics-cinematic .bill-chart-zero { fill: var(--bills-idle-middle); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-bar-group:focus-visible .bill-chart-column {
+  stroke: var(--bills-paid); stroke-width: 2.4px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-box,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-box {
+  fill: var(--bills-tooltip-bg); stroke: var(--bills-tooltip-border); stroke-width: 1px;
+  filter: drop-shadow(0 7px 11px var(--bills-tooltip-shadow));
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-title,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-title {
+  fill: var(--bills-tooltip-ink); font-size: 11px; font-weight: 750;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-line,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-line {
+  fill: var(--bills-tooltip-ink); font-size: 10px; font-weight: 520;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-caption,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-tooltip-caption {
+  fill: var(--bills-tooltip-caption); font-size: 9px;
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-detail { border-color: var(--bills-border); color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-detail strong { color: var(--bills-ink); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-detail span,
+.bill-analytics.bill-analytics-cinematic .bill-chart-note,
+.bill-analytics.bill-analytics-cinematic .bill-chart-empty { color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-filters,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-filters {
+  background: var(--bills-filter-bg); border-color: var(--bills-filter-border);
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-filters label { color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-filters select,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-filters select {
+  background: var(--surface); color: var(--bills-ink); border-color: var(--bills-filter-border);
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-header strong { color: var(--bills-ink); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-header p { color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-compare-button,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-compare-button {
+  background: var(--bills-button-bg); color: var(--bills-button-text); border-color: var(--bills-border);
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-compare-button:hover { border-color: var(--bills-paid); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-list,
+:root[data-theme="luxe"] .bill-analytics.bill-analytics-cinematic .bill-chart-category-list {
+  background: var(--bills-category-bg); border-color: var(--bills-border);
+}
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-info strong { color: var(--bills-ink); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-info span { color: var(--bills-muted); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-track { background: var(--bills-track-bg); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-paid { background: var(--bills-paid); }
+.bill-analytics.bill-analytics-cinematic .bill-chart-category-unpaid { background: var(--bills-unpaid); }
+@media (max-width: 680px) {
+  .bill-analytics.bill-analytics-cinematic .bill-analytics-heading { gap: 12px; }
+  .bill-analytics.bill-analytics-cinematic .bill-chart-heading-actions { align-items: flex-start; }
+  .bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle button { min-width: 70px; min-height: 32px; }
+  .bill-analytics.bill-analytics-cinematic .bill-chart-summary { gap: 12px; }
+  .bill-analytics.bill-analytics-cinematic .bill-chart-scroll { padding-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bill-analytics.bill-analytics-cinematic .bill-chart-column,
+  .bill-analytics.bill-analytics-cinematic .bill-chart-period-toggle button { transition: none; }
+}
+
+/* Haven Luxe chart cards share the translucent treatment of other .panel cards.
+   This selector intentionally beats the previous opaque Luxe backdrop. */
+:root[data-theme="luxe"] .panel.bill-analytics.bill-analytics-cinematic {
+  --bills-card-bg:linear-gradient(148deg,rgba(43,49,55,.63),rgba(22,31,39,.56));
+  --bills-filter-bg:rgba(20,35,39,.38);
+  --bills-filter-border:rgba(221,244,236,.19);
+  --bills-category-bg:rgba(21,40,40,.41);
+  background:var(--bills-card-bg);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 18px 48px rgba(0,0,0,.19),inset 0 1px rgba(255,255,255,.12);
+  backdrop-filter:blur(24px) saturate(128%);
+  -webkit-backdrop-filter:blur(24px) saturate(128%);
+}
+@media(prefers-reduced-transparency:reduce) {
+  :root[data-theme="luxe"] .panel.bill-analytics.bill-analytics-cinematic {background:rgba(18,28,33,.97)}
+}

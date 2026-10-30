@@ -50,3 +50,106 @@
 :root[data-theme="luxe"] .electricity-trend-head select,:root[data-theme="luxe"] .electricity-month-picker select,:root[data-theme="luxe"] .electricity-fields input {background:rgba(36,46,56,.96);border-color:rgba(255,255,255,.2);color:#f8f3ed}
 @media(max-width:750px) {.electricity-metrics {grid-template-columns:1fr;gap:9px}.electricity-fields {grid-template-columns:1fr}.electricity-usage-svg {min-height:120px}.electricity-section-top {gap:11px}}
 @media(max-width:440px) {.electricity-chart-wrap {padding:8px}.electricity-month-picker select {width:100%}.electricity-section-top .electricity-add-btn {width:100%;justify-content:center}}
+
+
+
+.electricity-expenses-panel {
+  --electricity-accent:#2c6e58;
+  --electricity-highlight:#29e0dd;
+  --electricity-wave:#11d8d8;
+  --electricity-grid:color-mix(in srgb,var(--muted) 21%,transparent);
+  min-width:0;
+  margin-bottom:19px;
+}
+.electricity-chart-wrap {border:1px solid var(--line);background:var(--surface-alt);border-radius:13px;padding:12px 14px}
+.electricity-wave-card {overflow:hidden}
+.electricity-wave-svg {display:block;width:100%;height:auto;min-height:180px;max-height:320px}
+.electricity-svg-overline {font-size:11px;font-weight:800;letter-spacing:.24em;fill:var(--green)}
+.electricity-timeline {stroke:var(--line);stroke-width:1.2;stroke-dasharray:7 7}
+.electricity-selection-line {stroke:color-mix(in srgb,var(--electricity-highlight) 55%, white 45%);stroke-width:1.5;opacity:.88}
+.electricity-selected-value {fill:var(--ink);font-size:24px;font-weight:800}
+.electricity-wave-fill {opacity:.9}
+.electricity-wave-fill-solid {opacity:.78}
+.electricity-wave-line {filter:drop-shadow(0 3px 6px rgba(255,255,255,.10))}
+.electricity-line-point {fill:var(--surface);stroke:rgba(255,255,255,.9);stroke-width:2.2}
+.electricity-line-point-selected {fill:var(--electricity-highlight);stroke:#bffbfb;stroke-width:4}
+.electricity-month-label {font-size:13px;font-weight:700;fill:var(--ink)}
+.electricity-month-label-selected {fill:var(--electricity-highlight);font-weight:850}
+.electricity-timeline-dot {fill:color-mix(in srgb,var(--ink) 55%, transparent);opacity:.65}
+.electricity-timeline-dot-selected {fill:var(--electricity-highlight);opacity:1;filter:drop-shadow(0 0 6px rgba(17,216,216,.65))}
+.electricity-trend-footer {display:flex;justify-content:space-between;gap:10px;font-size:.7rem;color:var(--muted);margin:0 3px 8px}
+
+:root[data-theme="light"] .electricity-expenses-panel {
+  --electricity-accent:#255e4d;
+  --electricity-wave:#0bc7cd;
+  --electricity-highlight:#19dbe2;
+}
+:root[data-theme="light"] .electricity-wave-card {
+  background:linear-gradient(180deg, rgba(242,248,246,.98), rgba(232,244,240,.95));
+}
+:root[data-theme="light"] .electricity-selected-value {fill:#0e3d32}
+:root[data-theme="light"] .electricity-line-point {fill:#214c40;stroke:#dff9f7}
+:root[data-theme="light"] .electricity-month-label {fill:#37594f}
+:root[data-theme="light"] .electricity-timeline-dot {fill:rgba(39,78,66,.55)}
+
+:root[data-theme="dark"] .electricity-expenses-panel,
+:root[data-theme="luxe"] .electricity-expenses-panel {
+  --electricity-accent:#8bd5c0;
+  --electricity-wave:#16dce3;
+  --electricity-highlight:#20e7e7;
+}
+:root[data-theme="dark"] .electricity-wave-card {
+  background:linear-gradient(180deg, rgba(7,20,30,.96), rgba(10,28,38,.92));
+  border-color:rgba(188,222,215,.18);
+}
+:root[data-theme="dark"] .electricity-selected-value,
+:root[data-theme="dark"] .electricity-month-label {fill:#f8f4ef}
+:root[data-theme="dark"] .electricity-timeline-dot {fill:rgba(238,246,244,.38)}
+:root[data-theme="dark"] .electricity-line-point {fill:#f5f7f7;stroke:#08242e}
+
+:root[data-theme="luxe"] .electricity-expenses-panel {background:linear-gradient(135deg,rgba(28,36,44,.94),rgba(16,25,33,.93));border-color:rgba(255,255,255,.19)}
+:root[data-theme="luxe"] .electricity-chart-wrap,:root[data-theme="luxe"] .electricity-metric,:root[data-theme="luxe"] .electricity-entry-form {background:rgba(13,23,31,.58);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border-color:rgba(255,255,255,.18)}
+:root[data-theme="luxe"] .electricity-wave-card {background:linear-gradient(180deg, rgba(6,18,29,.54), rgba(10,24,33,.42));border-color:rgba(224,236,232,.17)}
+:root[data-theme="luxe"] .electricity-trend-head select,:root[data-theme="luxe"] .electricity-month-picker select,:root[data-theme="luxe"] .electricity-fields input {background:rgba(36,46,56,.96);border-color:rgba(255,255,255,.2);color:#f8f3ed}
+:root[data-theme="luxe"] .electricity-selected-value,
+:root[data-theme="luxe"] .electricity-month-label {fill:#f8f3ed}
+:root[data-theme="luxe"] .electricity-timeline-dot {fill:rgba(242,248,246,.34)}
+:root[data-theme="luxe"] .electricity-line-point {fill:#f7faf8;stroke:#08242d}
+
+@media(max-width:750px) {
+  .electricity-wave-svg {min-height:145px}
+  .electricity-selected-value {font-size:18px}
+}
+
+/* Theme-aware wave line and markers. The main Light/Dark slider uses
+   data-theme="fluid", not data-theme="light" or "dark". */
+.electricity-expenses-panel {
+  --electricity-line: #173d3d;
+  --electricity-dot-fill: #17473d;
+  --electricity-dot-outline: #d9f7ef;
+}
+:root[data-theme="fluid"] .electricity-expenses-panel {
+  --electricity-line: color-mix(in srgb, #173d3d var(--theme-light), #f5ffff);
+  --electricity-dot-fill: color-mix(in srgb, #17473d var(--theme-light), #f6fcfa);
+  --electricity-dot-outline: color-mix(in srgb, #dbf8f1 var(--theme-light), #102731);
+}
+:root[data-theme="fluid"] .electricity-wave-svg .electricity-line-point {
+  fill: var(--electricity-dot-fill);
+  stroke: var(--electricity-dot-outline);
+  stroke-width: 2.5;
+}
+:root[data-theme="fluid"] .electricity-wave-svg .electricity-line-point-selected {
+  fill: var(--electricity-highlight);
+  stroke: var(--electricity-dot-outline);
+  stroke-width: 3.5;
+}
+:root[data-theme="luxe"] .electricity-expenses-panel {
+  --electricity-line: #f6ffff;
+  --electricity-dot-fill: #f7fdfb;
+  --electricity-dot-outline: #102b35;
+}
+:root[data-theme="luxe"] .electricity-wave-svg .electricity-line-point-selected {
+  fill: var(--electricity-highlight);
+  stroke: #b6fbf6;
+  stroke-width: 3.5;
+}

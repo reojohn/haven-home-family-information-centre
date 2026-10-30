@@ -163,6 +163,9 @@ function Provider({children}){
   const preferenceSync=useRef({userId:null,confirmed:null,desired:null,running:false});
   // In-flight chore statuses remain visible even if another action refreshes bootstrap.
   const pendingTaskStatus=useRef(new Map());
+  // Keep immediate status changes for appliances visible while Supabase saves.
+  // The stored result is also retained briefly to defeat older /bootstrap responses.
+  const pendingDeviceStatus=useRef(new Map());
   // Reuse the same household hydration for a normal refresh AND authentication.
   // The ?full=1 login/register/join response already includes the snapshot,
   // so the login screen never needs an additional serial /bootstrap request.
@@ -181,6 +184,7 @@ function Provider({children}){
     if(avatar.userId!==null && avatar.userId!==fetched.user.id){
       // Do not carry an old account's pending chore edits into another login.
       pendingTaskStatus.current.clear();
+      pendingDeviceStatus.current.clear();
     }
     if(avatar.userId!==fetched.user.id){
       avatarSync.current={userId:fetched.user.id,
@@ -205,6 +209,21 @@ function Provider({children}){
       fetched.tasks=fetched.tasks.map(task=>{
         const pending=pendingTaskStatus.current.get(task.id);
         return pending && pending.userId===fetched.user.id ? {...task,status:pending.status} : task;
+      });
+    }
+    if(pendingDeviceStatus.current.size && Array.isArray(fetched.devices)){
+      fetched.devices=fetched.devices.map(device=>{
+        const pending=pendingDeviceStatus.current.get(device.id);
+        if(!pending || pending.userId!==fetched.user.id)return device;
+        // Once a refresh includes the saved change (or a newer change from
+        // another household member), the temporary overlay is no longer needed.
+        const serverTime=Date.parse(device.updated_at||'')||0;
+        const confirmedTime=Date.parse(pending.updated_at||'')||0;
+        if(pending.saved && serverTime>=confirmedTime){
+          pendingDeviceStatus.current.delete(device.id);
+          return device;
+        }
+        return {...device,status:pending.status,updated_at:pending.updated_at};
       });
     }
     setData(fetched);setError('');return fetched;
@@ -248,6 +267,44 @@ function Provider({children}){
           ...prev,tasks:(prev.tasks||[]).map(t=>t.id===task.id?{...t,status:previousStatus}:t)
         }:prev);
         toast(`Unable to save chore. Previous status restored. ${e.message}`,'error');
+      }
+      return false;
+    }
+  };
+  const changeDeviceStatus=async(device,nextStatus)=>{
+    const userId=data?.user?.id;
+    if(!userId || !['on','off'].includes(nextStatus))return false;
+    // A slow request for one appliance must not block the others or allow
+    // multiple requests to race for the same appliance.
+    if(pendingDeviceStatus.current.get(device.id)?.saved===false)return false;
+    const previousStatus=device.status;
+    const previousTime=device.updated_at;
+    const pending={userId,status:nextStatus,updated_at:new Date().toISOString(),saved:false};
+    pendingDeviceStatus.current.set(device.id,pending);
+    setData(prev=>prev?.user?.id===userId?{
+      ...prev,devices:(prev.devices||[]).map(item=>item.id===device.id
+        ?{...item,status:nextStatus,updated_at:pending.updated_at}:item)
+    }:prev);
+    try{
+      // Only this PATCH is required: avoid refreshing every household module.
+      const saved=await api(`/devices/${device.id}/status`,'PATCH',{status:nextStatus});
+      if(pendingDeviceStatus.current.get(device.id)!==pending)return false;
+      pending.status=saved.status;
+      pending.updated_at=saved.updated_at;
+      pending.saved=true;
+      setData(prev=>prev?.user?.id===userId?{
+        ...prev,devices:(prev.devices||[]).map(item=>item.id===device.id?{...item,...saved}:item)
+      }:prev);
+      toast(`Recorded status updated for ${device.name}.`);
+      return true;
+    }catch(e){
+      if(pendingDeviceStatus.current.get(device.id)===pending){
+        pendingDeviceStatus.current.delete(device.id);
+        setData(prev=>prev?.user?.id===userId?{
+          ...prev,devices:(prev.devices||[]).map(item=>item.id===device.id
+            ?{...item,status:previousStatus,updated_at:previousTime}:item)
+        }:prev);
+        toast(`Could not update ${device.name}. Previous status restored. ${e.message}`,'error');
       }
       return false;
     }
@@ -355,8 +412,8 @@ function Provider({children}){
       }
     })();
   };
-  const logout=async()=>{dismissWelcome();pendingTaskStatus.current.clear();resetAvatarSync();preferenceSync.current={userId:null,confirmed:null,desired:null,running:false};setPreferencesSaving(false);try{await api('/auth/logout','POST')}catch{}setData(null);toast('You have signed out.')};
-  return <Ctx.Provider value={{data,setData,loading,error,setError,refresh,acceptBootstrap,run,logout,toast,notice,setNotice,welcomeUser,showWelcome,dismissWelcome,updatePreferences,preferencesSaving,selectAvatar,avatarSaving,resetAvatarSync,changeTaskStatus}}>{children}</Ctx.Provider>
+  const logout=async()=>{dismissWelcome();pendingTaskStatus.current.clear();pendingDeviceStatus.current.clear();resetAvatarSync();preferenceSync.current={userId:null,confirmed:null,desired:null,running:false};setPreferencesSaving(false);try{await api('/auth/logout','POST')}catch{}setData(null);toast('You have signed out.')};
+  return <Ctx.Provider value={{data,setData,loading,error,setError,refresh,acceptBootstrap,run,logout,toast,notice,setNotice,welcomeUser,showWelcome,dismissWelcome,updatePreferences,preferencesSaving,selectAvatar,avatarSaving,resetAvatarSync,changeTaskStatus,changeDeviceStatus}}>{children}</Ctx.Provider>
 }
 function Toast(){const {notice,setNotice}=useApp();useEffect(()=>{if(!notice)return;const id=setTimeout(()=>setNotice(null),4800);return()=>clearTimeout(id)},[notice,setNotice]);return notice&&<div role="status" aria-live="polite" className={`toast ${notice.type==='error'?'toast-error':''}`}><span className="toasticon">{notice.type==='error'?<AlertCircle size={18}/>:<CheckCircle2 size={18}/>}</span><span>{notice.message}</span><button aria-label="Dismiss notification" className="icon-button" onClick={()=>setNotice(null)}><X size={16}/></button></div>}
 function Button({children,variant='primary',icon:Icon,loading=false,...props}){return <button {...props} disabled={props.disabled||loading} className={`btn btn-${variant} ${props.className||''}`} >{loading?<span className="mini-spinner"/>:Icon&&<Icon size={17}/>}<span>{children}</span></button>}
@@ -788,7 +845,7 @@ function ApplianceTypePicker({value,onChange,disabled=false}){
 const initialDevice = {name:'',room:'',kind:'Refrigerator',status:'unknown'};
 
 function HouseholdDevices(){
-  const {data,run}=useApp();
+  const {data,run,changeDeviceStatus}=useApp();
   const devices=data.devices||[];
   const [expanded,setExpanded]=useState(false);
   const [formOpen,setFormOpen]=useState(false);
@@ -796,6 +853,8 @@ function HouseholdDevices(){
   const [draft,setDraft]=useState(initialDevice);
   const [deleteTarget,setDeleteTarget]=useState(null);
   const [busy,setBusy]=useState(false);
+  // Disable only the appliance currently being saved, not the whole dashboard.
+  const [savingStatuses,setSavingStatuses]=useState(()=>new Set());
   const visible=expanded?devices:devices.slice(0,4);
   const countOn=devices.filter(d=>d.status==='on').length;
   const countOff=devices.filter(d=>d.status==='off').length;
@@ -813,10 +872,15 @@ function HouseholdDevices(){
     }catch{}finally{setBusy(false)}
   };
   const recordStatus=async device=>{
-    setBusy(true);
-    try{await run(`/devices/${device.id}/status`,'PATCH',
-      {status:device.status==='on'?'off':'on'},
-      `Recorded status updated for ${device.name}.`)}catch{}finally{setBusy(false)}
+    if(savingStatuses.has(device.id))return;
+    setSavingStatuses(previous=>new Set(previous).add(device.id));
+    try{
+      await changeDeviceStatus(device,device.status==='on'?'off':'on');
+    }finally{
+      setSavingStatuses(previous=>{
+        const next=new Set(previous);next.delete(device.id);return next;
+      });
+    }
   };
   const remove=async()=>{
     if(!deleteTarget)return;
@@ -846,6 +910,7 @@ function HouseholdDevices(){
         {visible.map(device=>{
           const image=imageForDevice(device.kind);
           const statusLabel=device.status==='on'?'Recorded on':device.status==='off'?'Recorded off':'Not checked';
+          const savingStatus=savingStatuses.has(device.id);
           const lastUpdated=device.updated_at?new Date(device.updated_at).toLocaleString('en-PH',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):null;
           return <article className={`device-card device-card-${device.status}`} key={device.id}>
             <div className="device-card-top">
@@ -860,9 +925,9 @@ function HouseholdDevices(){
             <div className="device-card-bottom">
               <div className="device-record-info"><Clock3 size={15} aria-hidden="true"/><div><span>LAST RECORDED</span><strong>{lastUpdated||'No update yet'}</strong></div></div>
               <div className="device-card-controls">
-                <button type="button" className="device-record-btn" onClick={()=>recordStatus(device)} disabled={busy} aria-label={`Record ${device.name} as ${device.status==='on'?'off':'on'}. Does not control the physical device.`}><Power size={16} aria-hidden="true"/>{device.status==='on'?'Record as off':'Record as on'}</button>
-                <button type="button" className="device-text-action" onClick={()=>editDevice(device)} disabled={busy} aria-label={`Edit ${device.name}`} title={`Edit ${device.name}`}><Pencil size={17}/></button>
-                <button type="button" className="device-delete-btn" onClick={()=>setDeleteTarget(device)} disabled={busy} aria-label={`Remove ${device.name}`} title={`Remove ${device.name}`}><Trash2 size={17}/></button>
+                <button type="button" className="device-record-btn" onClick={()=>recordStatus(device)} disabled={busy||savingStatus} aria-busy={savingStatus} aria-label={savingStatus?`Saving recorded status for ${device.name}`:`Record ${device.name} as ${device.status==='on'?'off':'on'}. Does not control the physical device.`}><Power size={16} aria-hidden="true"/>{savingStatus?'Saving…':device.status==='on'?'Record as off':'Record as on'}</button>
+                <button type="button" className="device-text-action" onClick={()=>editDevice(device)} disabled={busy||savingStatus} aria-label={`Edit ${device.name}`} title={`Edit ${device.name}`}><Pencil size={17}/></button>
+                <button type="button" className="device-delete-btn" onClick={()=>setDeleteTarget(device)} disabled={busy||savingStatus} aria-label={`Remove ${device.name}`} title={`Remove ${device.name}`}><Trash2 size={17}/></button>
               </div>
             </div>
           </article>
