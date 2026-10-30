@@ -47,15 +47,9 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Local household-specific demo data and generated SQL seed exports
+# Private, household-specific demo data and SQL exports
+/CHORES_PREVIEW.csv
 /00_PREVIEW_HOUSEHOLD_AND_MEMBERS.sql
 /01_LOAD_32_FAMILY_CHORES.sql
 /02_VERIFY_INSERTED_CHORES.sql
 /03_OPTIONAL_REMOVE_THIS_DEMO_BATCH.sql
-/CHORES_PREVIEW.csv
-/README_FIRST.md
-
-# Local source archives or downloaded backups
-*.zip
-*.7z
-*.rar

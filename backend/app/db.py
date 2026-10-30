@@ -13,7 +13,10 @@ except ImportError:
     pass
 
 DEFAULT_PATH = ROOT / 'data' / 'hic.sqlite3'
-DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
+# Vercel's deployed source filesystem is read-only. Require the persistent
+# Supabase PostgreSQL DATABASE_URL there instead of silently using SQLite.
+if os.getenv('VERCEL') == '1' and not os.getenv('DATABASE_URL'):
+    raise RuntimeError('DATABASE_URL is required on Vercel. Set the Supabase pooler connection URL in the backend project Environment Variables.')
 url_string = os.getenv('DATABASE_URL', f'sqlite:///{DEFAULT_PATH}')
 url = make_url(url_string)
 
@@ -31,7 +34,10 @@ if url.get_backend_name() == 'postgresql':
     engine = create_engine(url, connect_args=connect_args, pool_pre_ping=True,
                            pool_size=3, max_overflow=2, pool_recycle=1800)
 else:
-    # Keep SQLite as an explicit fallback and for isolated regression tests.
+    # Local SQLite remains available for development and isolated tests.
+    # Do not create a local data directory during a PostgreSQL deployment.
+    if url.get_backend_name() == 'sqlite':
+        DEFAULT_PATH.parent.mkdir(parents=True, exist_ok=True)
     engine = create_engine(url, connect_args={'check_same_thread': False}
                            if url.get_backend_name() == 'sqlite' else {},
                            pool_pre_ping=True)
