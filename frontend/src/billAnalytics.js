@@ -31,7 +31,7 @@ export function trailingMonths(anchor, count) {
   return Array.from({length:count}, (_,i)=>{
     const d=new Date(Date.UTC(y,m-count+i,1));
     const month=`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
-    return {month,label:`${MONTH_NAME.format(d)} '${String(d.getUTCFullYear()).slice(-2)}`,
+    return {month,label:MONTH_NAME.format(d),
       longLabel:new Intl.DateTimeFormat('en-PH',{month:'long',year:'numeric',timeZone:'UTC'}).format(d),
       paid:0,unpaid:0,count:0};
   });

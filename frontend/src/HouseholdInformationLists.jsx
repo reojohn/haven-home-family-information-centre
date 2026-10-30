@@ -1,3 +1,4 @@
+import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo,useRef,useState} from 'react';
 import {ChevronLeft,ChevronRight,Search,X,Phone,Trash2,Megaphone,Plus} from 'lucide-react';
 import './HouseholdInformationLists.css';
@@ -18,9 +19,9 @@ function RecordsFrame({kind,query,onQuery,filteredCount,total,pageSize,onPageSiz
     <div className="hic-info-controls">
       <span aria-live="polite">{filteredCount?`Showing ${first}–${last} of ${filteredCount}`:'No matching records'}{query&&` · ${total} total`}</span>
       <label>Rows
-        <select aria-label={`${label} per page`} value={pageSize} onChange={e=>onPageSize(Number(e.target.value))}>
+        <PremiumSelect aria-label={`${label} per page`} value={pageSize} onChange={e=>onPageSize(Number(e.target.value))}>
           {[5,10,20].map(n=><option key={n} value={n}>{n}</option>)}
-        </select>
+        </PremiumSelect>
       </label>
     </div>
     <div className="hic-info-scroll" ref={scrollRef} tabIndex={0} role="region" aria-label={`Scrollable ${label} list`}>

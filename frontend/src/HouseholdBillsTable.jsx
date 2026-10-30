@@ -1,3 +1,4 @@
+import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo,useRef,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {ChevronLeft,ChevronRight,ReceiptText,Search,X} from 'lucide-react';
@@ -44,8 +45,8 @@ export default function HouseholdBillsTable({bills=[],status='all',onAdd,formatA
         {query&&<button type="button" className="bill-search-clear" aria-label="Clear search" onClick={()=>{setQuery('');resetPage();}}><X size={16}/></button>}
       </label>
       <div className="household-bills-options">
-        <label>Sort <select aria-label="Sort household bills" value={sort} onChange={e=>{setSort(e.target.value);resetPage();}}><option value="newest">Newest due</option><option value="oldest">Oldest due</option></select></label>
-        <label>Rows <select aria-label="Rows per page" value={pageSize} onChange={e=>{setPageSize(Number(e.target.value));resetPage();}}><option value="10">10</option><option value="20">20</option><option value="50">50</option></select></label>
+        <label>Sort <PremiumSelect aria-label="Sort household bills" value={sort} onChange={e=>{setSort(e.target.value);resetPage();}}><option value="newest">Newest due</option><option value="oldest">Oldest due</option></PremiumSelect></label>
+        <label>Rows <PremiumSelect aria-label="Rows per page" value={pageSize} onChange={e=>{setPageSize(Number(e.target.value));resetPage();}}><option value="10">10</option><option value="20">20</option><option value="50">50</option></PremiumSelect></label>
       </div>
     </div>
     <div className="household-bills-results" role="status" aria-live="polite">

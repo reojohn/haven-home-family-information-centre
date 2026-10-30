@@ -254,3 +254,150 @@
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .mobile-bottom-link { transition:none!important; animation:none!important; }
 }
+
+/* Compact phone drawer: keep the full page menu without covering most of the
+   screen. Desktop/tablet sidebar and the five-item mobile bottom bar are intact. */
+@media (max-width: 640px) {
+  .sidebar {
+    width: clamp(222px, 67vw, 250px);
+    min-width: 0;
+    /* Reserve clearance above the phone's bottom controls, so the account
+       row doesn't disappear under an in-app browser toolbar. */
+    padding: 14px 10px calc(66px + env(safe-area-inset-bottom, 0px));
+    gap: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .sidebar .brand {
+    gap: 7px;
+    padding: 0 2px;
+    margin: 0 0 14px;
+    min-height: 43px;
+  }
+  .sidebar .brand-mark.haven-logo-frame {
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+  }
+  .sidebar .brand > div:not(.brand-mark) { min-width: 0; }
+  .sidebar .brand strong { font-size: 1.29rem; line-height: 1.03; }
+  .sidebar .brand small { font-size: .40rem; line-height: 1.35; letter-spacing: .025em; }
+  .sidebar .side-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    width: 30px;
+    height: 34px;
+    padding: 5px;
+    margin-left: auto;
+    flex: 0 0 30px;
+    border-radius: 9px;
+  }
+  .sidebar .side-close svg { width: 17px; height: 17px; }
+
+  .sidebar .household-chip {
+    margin: 0 0 17px;
+    padding: 8px;
+    gap: 7px;
+    min-height: 51px;
+    border-radius: 11px;
+  }
+  .sidebar .house-avatar,
+  .sidebar .house-avatar.family-avatar {
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+  .sidebar .house-avatar svg { width: 16px; height: 16px; }
+  .sidebar .household-chip strong { font-size: .73rem; }
+  .sidebar .household-chip span { font-size: .62rem; }
+  .sidebar .household-chip > svg { flex: 0 0 13px; width: 13px; height: 13px; }
+
+  .sidebar .nav-label {
+    margin: 0 9px 7px;
+    font-size: .56rem;
+    letter-spacing: .13em;
+  }
+  .sidebar .nav-label-bottom { margin-top: 15px; }
+  .sidebar .side-nav { gap: 3px; }
+  .sidebar .nav-link {
+    min-height: 43px;
+    padding: 9px 10px;
+    gap: 10px;
+    border-radius: 9px;
+    font-size: .78rem;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .sidebar .nav-link > svg { width: 17px; height: 17px; flex: 0 0 17px; }
+  .sidebar .nav-link .nav-dot { width: 6px; height: 6px; flex: 0 0 6px; }
+
+  /* Keep the desktop's encouragement card and signed-in member visible on
+     phones, rather than hiding them in the compact drawer. */
+  .sidebar .sidebar-bottom {
+    display: block;
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding-top: 9px;
+    min-width: 0;
+  }
+  .sidebar .side-help {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    margin: 0 1px 9px;
+    padding: 11px 12px;
+    border-radius: 11px;
+  }
+  .sidebar .side-help svg { width: 15px; height: 15px; }
+  .sidebar .side-help strong { font-size: .70rem; line-height: 1.3; }
+  .sidebar .side-help span { font-size: .62rem; line-height: 1.38; }
+  .sidebar .side-profile {
+    display: flex;
+    align-items: center;
+    min-height: 49px;
+    padding: 9px 2px 2px;
+    gap: 7px;
+  }
+  .sidebar .side-profile .truncate { flex: 1 1 auto; min-width: 0; }
+  .sidebar .side-profile .truncate strong {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+  }
+  .sidebar .side-profile .truncate small {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .sidebar .side-profile .avatar {
+    flex: 0 0 31px;
+    height: 31px;
+    width: 31px;
+  }
+  .sidebar .side-profile strong { font-size: .70rem; line-height: 1.3; }
+  .sidebar .side-profile small { font-size: .61rem; }
+  .sidebar .side-profile .icon-button {
+    min-width: 30px;
+    width: 30px;
+    height: 32px;
+    flex: 0 0 30px;
+  }
+  .sidebar .side-profile .icon-button svg { width: 16px; height: 16px; }
+}
+
+@media (max-width: 360px) {
+  .sidebar { width: min(70vw, 228px); padding-left: 8px; padding-right: 8px; }
+  .sidebar .brand { gap: 5px; }
+  .sidebar .brand strong { font-size: 1.22rem; }
+  .sidebar .brand small { font-size: .37rem; letter-spacing: 0; }
+  .sidebar .nav-link { padding-left: 8px; padding-right: 8px; gap: 8px; font-size: .75rem; }
+}

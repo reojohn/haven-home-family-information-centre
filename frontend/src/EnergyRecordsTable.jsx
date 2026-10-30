@@ -1,3 +1,4 @@
+import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo, useRef, useState} from 'react';
 import {ChevronLeft, ChevronRight, Search, X, Zap} from 'lucide-react';
 
@@ -44,14 +45,14 @@ export default function EnergyRecordsTable({records = [], formatMonth, formatAmo
           onClick={() => updateFilter(setSearch, '')}><X size={16} /></button>}
       </label>
       <div className="household-bills-options">
-        <label>Sort <select aria-label="Sort monthly energy records" value={sort}
+        <label>Sort <PremiumSelect aria-label="Sort monthly energy records" value={sort}
           onChange={e => updateFilter(setSort, e.target.value)}>
           <option value="newest">Newest first</option><option value="oldest">Oldest first</option>
-        </select></label>
-        <label>Rows <select aria-label="Energy records per page" value={pageSize}
+        </PremiumSelect></label>
+        <label>Rows <PremiumSelect aria-label="Energy records per page" value={pageSize}
           onChange={e => updateFilter(setPageSize, Number(e.target.value))}>
           <option value="10">10</option><option value="20">20</option><option value="50">50</option>
-        </select></label>
+        </PremiumSelect></label>
       </div>
     </div>
     <div className="household-bills-results" role="status" aria-live="polite">

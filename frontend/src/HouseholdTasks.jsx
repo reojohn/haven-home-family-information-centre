@@ -1,3 +1,4 @@
+import PremiumSelect from './PremiumSelect.jsx';
 import React, {useEffect, useMemo, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import {
@@ -171,9 +172,9 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
       </div>
       <div className="chore-toolbar">
         <label className="chores-search"><Search size={18}/><input aria-label="Search household chores" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Find a chore…" maxLength={120}/></label>
-        <label className="chore-toolbar-filter"><span>Priority</span><select aria-label="Filter priority" value={priority} onChange={e=>setPriority(e.target.value)}><option value="all">All priorities</option>{PRIORITIES.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
-        {focus==='all'&&<label className="chore-toolbar-filter"><span>Assigned to</span><select aria-label="Filter assigned member" value={assigned} onChange={e=>setAssigned(e.target.value)}><option value="all">Everyone</option><option value="unassigned">Unassigned</option>{members.map(m=><option key={m.id} value={String(m.id)}>{m.name}</option>)}</select></label>}
-        <label className="chore-toolbar-filter"><span>Sort</span><select aria-label="Sort chores" value={sort} onChange={e=>setSort(e.target.value)}><option value="due">Due soonest</option><option value="priority">Priority first</option><option value="newest">Newest first</option></select></label>
+        <label className="chore-toolbar-filter"><span>Priority</span><PremiumSelect aria-label="Filter priority" value={priority} onChange={e=>setPriority(e.target.value)}><option value="all">All priorities</option>{PRIORITIES.map(([value,label])=><option key={value} value={value}>{label}</option>)}</PremiumSelect></label>
+        {focus==='all'&&<label className="chore-toolbar-filter"><span>Assigned to</span><PremiumSelect aria-label="Filter assigned member" value={assigned} onChange={e=>setAssigned(e.target.value)}><option value="all">Everyone</option><option value="unassigned">Unassigned</option>{members.map(m=><option key={m.id} value={String(m.id)}>{m.name}</option>)}</PremiumSelect></label>}
+        <label className="chore-toolbar-filter"><span>Sort</span><PremiumSelect aria-label="Sort chores" value={sort} onChange={e=>setSort(e.target.value)}><option value="due">Due soonest</option><option value="priority">Priority first</option><option value="newest">Newest first</option></PremiumSelect></label>
         {hasExtraFilters&&<button type="button" className="chore-clear" onClick={clearFilters}>Clear filters</button>}
       </div>
       <div className="chore-list-controls">
@@ -183,7 +184,7 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
             <button type="button" aria-label="Comfortable view" aria-pressed={density==='comfortable'} title="Comfortable view" className={density==='comfortable'?'selected':''} onClick={()=>setDensity('comfortable')}><LayoutList size={16}/></button>
             <button type="button" aria-label="Compact view" aria-pressed={density==='compact'} title="Compact view" className={density==='compact'?'selected':''} onClick={()=>setDensity('compact')}><List size={16}/></button>
           </div>
-          <label>Show <select aria-label="Tasks per page" value={perPage} onChange={e=>setPerPage(Number(e.target.value))}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label>
+          <label>Show <PremiumSelect aria-label="Tasks per page" value={perPage} onChange={e=>setPerPage(Number(e.target.value))}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></PremiumSelect></label>
         </div>
       </div>
       <div className={`chores-scroll chore-list-${density}`} tabIndex={0} aria-label="Scrollable household tasks">
@@ -246,11 +247,11 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
       <form className="chores-form" onSubmit={save}>
         <label>Task name<input autoFocus required maxLength={120} placeholder="e.g. Clean the living room" value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))}/></label>
         <label>Description (optional)<textarea maxLength={1500} rows={3} placeholder="Add helpful details for your family…" value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))}/></label>
-        <div className="chores-form-two"><label>Category<select value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>{CATEGORIES.map(v=><option key={v}>{v}</option>)}</select></label>
-          <label>Priority<select value={form.priority} onChange={e=>setForm(f=>({...f,priority:e.target.value}))}>{PRIORITIES.map(([value,name])=><option value={value} key={value}>{name}</option>)}</select></label></div>
+        <div className="chores-form-two"><label>Category<PremiumSelect aria-label="Chore category" value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>{CATEGORIES.map(v=><option key={v}>{v}</option>)}</PremiumSelect></label>
+          <label>Priority<PremiumSelect aria-label="Chore priority" value={form.priority} onChange={e=>setForm(f=>({...f,priority:e.target.value}))}>{PRIORITIES.map(([value,name])=><option value={value} key={value}>{name}</option>)}</PremiumSelect></label></div>
         <div className="chores-form-two"><label>Due date<input type="date" required value={form.due_date} onChange={e=>setForm(f=>({...f,due_date:e.target.value}))}/></label>
-          <label>Assign to<select value={form.assigned_to} onChange={e=>setForm(f=>({...f,assigned_to:e.target.value}))}><option value="">Unassigned</option>{members.map(m=><option key={m.id} value={String(m.id)}>{m.name}</option>)}</select></label></div>
-        <label>Repeat<select value={form.repeat} onChange={e=>setForm(f=>({...f,repeat:e.target.value}))}>{REPEATS.map(([value,label])=><option value={value} key={value}>{label}</option>)}</select></label>
+          <label>Assign to<PremiumSelect aria-label="Assign chore to" value={form.assigned_to} onChange={e=>setForm(f=>({...f,assigned_to:e.target.value}))}><option value="">Unassigned</option>{members.map(m=><option key={m.id} value={String(m.id)}>{m.name}</option>)}</PremiumSelect></label></div>
+        <label>Repeat<PremiumSelect aria-label="Chore repeat frequency" value={form.repeat} onChange={e=>setForm(f=>({...f,repeat:e.target.value}))}>{REPEATS.map(([value,label])=><option value={value} key={value}>{label}</option>)}</PremiumSelect></label>
         <p className="chores-form-help"><Repeat2 size={16}/> For recurring chores, the next date is scheduled after you mark the current occurrence as complete.</p>
         <div className="form-buttons"><button type="button" className="btn btn-outline" disabled={working} onClick={close}>Cancel</button>
           <button type="submit" className="btn btn-primary" disabled={working || !form.title.trim()}><Save size={17}/>{working?'Saving…':editing?'Save changes':'Add chore'}</button></div>

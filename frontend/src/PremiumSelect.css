@@ -1,0 +1,50 @@
+/* Haven Home shared dropdown design: styled menu, persistent selection, accessible navigation.
+   Portal placement avoids clipped menus in scrollable cards, charts, and modal dialogs. */
+.haven-select{position:relative;display:block;width:100%;min-width:0;color:var(--ink);font-size:.82rem;font-weight:700;flex-shrink:1}
+.haven-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-width:0;min-height:42px;text-align:left;padding:8px 9px 8px 13px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;transition:border-color .18s,box-shadow .18s,background .18s,transform .18s}
+.haven-select-trigger:hover:not(:disabled){border-color:color-mix(in srgb,var(--green) 55%,var(--line));background:var(--surface-alt)}
+.haven-select-trigger:focus-visible,.haven-select-open .haven-select-trigger{outline:0;border-color:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 15%,transparent)}
+.haven-select-trigger:disabled{opacity:.55;cursor:not-allowed}
+.haven-select-value{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
+.haven-select-placeholder{color:var(--muted)}
+.haven-select-caret{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:8px;background:color-mix(in srgb,var(--green) 9%,var(--surface));color:var(--green);transition:transform .18s,background .18s}
+.haven-select-open .haven-select-caret{transform:rotate(180deg);background:color-mix(in srgb,var(--green) 17%,var(--surface))}
+.haven-select-menu{position:fixed;z-index:15000;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:6px;background:var(--surface);border:1px solid color-mix(in srgb,var(--green) 24%,var(--line));border-radius:14px;box-shadow:0 18px 48px rgba(11,35,25,.20),0 3px 9px rgba(11,35,25,.08);color:var(--ink);scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--green) 55%,var(--line)) transparent;animation:haven-select-appear .15s ease-out both}
+.haven-select-menu-up{transform-origin:bottom center}
+.haven-select-option{display:flex;align-items:center;gap:10px;min-height:40px;padding:9px 12px;line-height:1.35;border-radius:9px;color:var(--ink);font-size:.83rem;font-weight:650;cursor:pointer;transition:background .12s,color .12s;user-select:none}
+.haven-select-option-text{flex:1;min-width:0;overflow-wrap:anywhere}
+.haven-select-option.is-active,.haven-select-option:hover:not([aria-disabled=true]){background:var(--surface-alt)}
+.haven-select-option.is-selected{background:color-mix(in srgb,var(--green) 13%,var(--surface));color:var(--green-strong);font-weight:800}
+.haven-select-option.is-selected.is-active{background:color-mix(in srgb,var(--green) 20%,var(--surface))}
+.haven-select-option[aria-disabled=true]{opacity:.4;cursor:not-allowed}
+.haven-select-tick{margin-left:auto;flex:none;color:var(--green)}
+@keyframes haven-select-appear{from{opacity:0;translate:0 4px}to{opacity:1;translate:0 0}}
+/* Forms, bill filters, row counts, chart controls, chores and city selection. */
+.field .haven-select-trigger{min-height:47px;border-radius:11px;padding-left:14px}
+.bill-chart-filters .haven-select{font-size:.79rem}
+.bill-chart-filters .haven-select-trigger{min-height:40px}
+.household-bills-options .haven-select{width:145px;max-width:100%}
+.household-bills-options label:last-child .haven-select{width:85px}
+.hic-info-controls .haven-select{width:78px;font-size:.74rem}
+.hic-info-controls .haven-select-trigger{min-height:34px;padding:5px 5px 5px 9px;border-radius:9px}
+.electricity-month-picker .haven-select{width:235px;max-width:100%}
+.electricity-trend-head .haven-select{min-width:158px;display:inline-block;vertical-align:middle;margin-left:8px}
+.electricity-trend-head .haven-select-trigger{min-height:37px}
+.chores-page .haven-select{font-size:.78rem}
+.chores-page .haven-select-trigger{min-height:39px}
+.chores-page .chore-toolbar-filter .haven-select{width:100%}
+.chores-page .chore-view-controls label .haven-select{width:90px}
+/* The theme variables here are intentionally self-contained: menu is rendered under document.body. */
+:root[data-theme="dark"] .haven-select-menu{box-shadow:0 21px 55px rgba(0,0,0,.45);border-color:#3c6151}
+:root[data-theme="luxe"] .haven-select-trigger{background:rgba(28,39,47,.94);border-color:rgba(239,218,191,.24);color:#fff7ee}
+:root[data-theme="luxe"] .haven-select-trigger:hover:not(:disabled){background:rgba(43,53,61,.97);border-color:rgba(237,191,130,.64)}
+:root[data-theme="luxe"] .haven-select-trigger:focus-visible,:root[data-theme="luxe"] .haven-select-open .haven-select-trigger{border-color:#e7c18e;box-shadow:0 0 0 3px rgba(234,196,142,.18)}
+:root[data-theme="luxe"] .haven-select-caret{background:rgba(232,191,129,.14);color:#ecc58e}
+:root[data-theme="luxe"] .haven-select-menu{background:#243039;color:#fff8ef;border-color:rgba(235,200,150,.40);box-shadow:0 21px 54px rgba(0,0,0,.55);scrollbar-color:#d1a870 transparent}
+:root[data-theme="luxe"] .haven-select-option{color:#faf4e9}
+:root[data-theme="luxe"] .haven-select-option.is-active{background:rgba(235,203,158,.12)}
+:root[data-theme="luxe"] .haven-select-option.is-selected{background:rgba(232,190,130,.20);color:#ffe2b2}
+:root[data-theme="luxe"] .haven-select-option.is-selected.is-active{background:rgba(232,190,130,.28)}
+:root[data-theme="luxe"] .haven-select-tick{color:#eec58c}
+@media(max-width:600px){.haven-select-trigger{min-height:42px}.haven-select-menu{border-radius:12px}.haven-select-option{min-height:43px}.electricity-trend-head .haven-select{min-width:130px}}
+@media(prefers-reduced-motion:reduce){.haven-select-trigger,.haven-select-caret,.haven-select-option{transition:none}.haven-select-menu{animation:none}}

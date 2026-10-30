@@ -1,3 +1,4 @@
+import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo, useState} from 'react';
 import {BarChart3, ChevronDown, ChevronUp, Info, Plus, Save, X, Zap} from 'lucide-react';
 import EnergyRecordsTable from './EnergyRecordsTable.jsx';
@@ -44,9 +45,9 @@ function UsageTrend({records, selected, onSelect}) {
       <span>{records.length} {records.length===1?'month':'months'} shown</span>
     </div>
     <div className="electricity-month-picker"><label htmlFor="electricity-inspected-month">Inspect a month</label>
-      <select id="electricity-inspected-month" value={selected || records.at(-1).month} onChange={e=>onSelect(e.target.value)}>
+      <PremiumSelect id="electricity-inspected-month" aria-label="Inspect electricity month" value={selected || records.at(-1).month} onChange={e=>onSelect(e.target.value)}>
         {records.map(r=><option key={r.month} value={r.month}>{dateLabel(r.month,{month:'long',year:'numeric'})}</option>)}
-      </select>
+      </PremiumSelect>
     </div>
   </div>;
 }
@@ -111,9 +112,9 @@ export default function ElectricityUsageSection({records = [], run, formatAmount
 
     <div className="electricity-trend-head">
       <div><strong>Consumption trend</strong><span>Based on monthly records</span></div>
-      <label>Time period <select value={range} onChange={e=>setRange(e.target.value)} aria-label="Electricity usage chart time period">
+      <label>Time period <PremiumSelect value={range} onChange={e=>setRange(e.target.value)} aria-label="Electricity usage chart time period">
         <option value="6">Last 6 readings</option><option value="12">Last 12 readings</option><option value="all">All recorded months</option>
-      </select></label>
+      </PremiumSelect></label>
     </div>
     <UsageTrend records={visible} selected={inspected?.month} onSelect={setSelectedMonth}/>
     {inspected && <div className="electricity-inspected"><span><strong>{dateLabel(inspected.month,{month:'long',year:'numeric'})}</strong> <span>{usageText(inspected.kwh)}</span></span><span>Recorded cost: <strong>{formatAmount(inspected.cost)}</strong></span></div>}

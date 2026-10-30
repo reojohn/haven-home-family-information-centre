@@ -6,7 +6,7 @@ import {
   House, LayoutDashboard, CalendarDays, Megaphone, Zap, Wallet, Settings2, Menu, X, Bell, ChevronRight,
   Plus, ArrowUpRight, ArrowLeft, CheckCircle2, AlertCircle, Clock3, CreditCard, CalendarCheck, Phone,
   ShieldCheck, Sun, Moon, Type, Copy, LogOut, Users, Sparkles, TrendingUp, CircleHelp, Trash2, Pencil,
-  Save, Check, Search, Filter, ReceiptText, CalendarPlus, Info, Eye, LockKeyhole, UserPlus, BarChart3,
+  Save, Check, Search, Filter, ReceiptText, CalendarPlus, Info, Eye, EyeOff, ArrowRight, LockKeyhole, UserPlus, BarChart3,
   MessageSquareText, SlidersHorizontal, RotateCcw, Home as HomeIcon, Send, ChevronLeft, ClipboardCheck,
   Refrigerator, WashingMachine, Tv, Fan, Lightbulb, Wind, Plug, Power, MoreHorizontal, Camera, UploadCloud, ZoomIn, ZoomOut, Image as ImageIcon
 } from 'lucide-react';
@@ -19,9 +19,12 @@ import {AnnouncementRecords,ContactRecords} from './HouseholdInformationLists.js
 import HouseholdTasks from './HouseholdTasks.jsx';
 import ElectricityUsageSection from './ElectricityUsageSection.jsx';
 import PageHero from './PageHero.jsx';
+import WelcomeModal from './WelcomeModal.jsx';
 import {ListTodo} from 'lucide-react';
 import './premium.css';
 import './mobile.css';
+import PremiumSelect from './PremiumSelect.jsx';
+import './PremiumSelect.css';
 
 // The Haven brand emblem is separate from each household's family identity.
 // The image is bundled in frontend/public/branding/ and has a transparent background.
@@ -125,6 +128,11 @@ function applyDisplayPreferences(preferences){
 }
 function Provider({children}){
   const [data,setData]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState(null);
+  // This lives only in memory: a new successful authentication shows the greeting,
+  // while refreshing the Dashboard or navigating pages never opens it again.
+  const [welcomeUser,setWelcomeUser]=useState(null);
+  const showWelcome=user=>{if(user?.id && user?.name)setWelcomeUser(user)};
+  const dismissWelcome=()=>setWelcomeUser(null);
   const [preferencesSaving,setPreferencesSaving]=useState(false);
   const [avatarSaving,setAvatarSaving]=useState(false);
   // Keep avatar changes instantly visible while the latest selection is saved.
@@ -326,8 +334,8 @@ function Provider({children}){
       }
     })();
   };
-  const logout=async()=>{pendingTaskStatus.current.clear();resetAvatarSync();preferenceSync.current={userId:null,confirmed:null,desired:null,running:false};setPreferencesSaving(false);try{await api('/auth/logout','POST')}catch{}setData(null);toast('You have signed out.')};
-  return <Ctx.Provider value={{data,setData,loading,error,setError,refresh,acceptBootstrap,run,logout,toast,notice,setNotice,updatePreferences,preferencesSaving,selectAvatar,avatarSaving,resetAvatarSync,changeTaskStatus}}>{children}</Ctx.Provider>
+  const logout=async()=>{dismissWelcome();pendingTaskStatus.current.clear();resetAvatarSync();preferenceSync.current={userId:null,confirmed:null,desired:null,running:false};setPreferencesSaving(false);try{await api('/auth/logout','POST')}catch{}setData(null);toast('You have signed out.')};
+  return <Ctx.Provider value={{data,setData,loading,error,setError,refresh,acceptBootstrap,run,logout,toast,notice,setNotice,welcomeUser,showWelcome,dismissWelcome,updatePreferences,preferencesSaving,selectAvatar,avatarSaving,resetAvatarSync,changeTaskStatus}}>{children}</Ctx.Provider>
 }
 function Toast(){const {notice,setNotice}=useApp();useEffect(()=>{if(!notice)return;const id=setTimeout(()=>setNotice(null),4800);return()=>clearTimeout(id)},[notice,setNotice]);return notice&&<div role="status" aria-live="polite" className={`toast ${notice.type==='error'?'toast-error':''}`}><span className="toasticon">{notice.type==='error'?<AlertCircle size={18}/>:<CheckCircle2 size={18}/>}</span><span>{notice.message}</span><button aria-label="Dismiss notification" className="icon-button" onClick={()=>setNotice(null)}><X size={16}/></button></div>}
 function Button({children,variant='primary',icon:Icon,loading=false,...props}){return <button {...props} disabled={props.disabled||loading} className={`btn btn-${variant} ${props.className||''}`} >{loading?<span className="mini-spinner"/>:Icon&&<Icon size={17}/>}<span>{children}</span></button>}
@@ -335,10 +343,10 @@ function IconButton({icon:Icon,label,...props}){return <button {...props} type={
 function Pill({children,color='neutral'}){return <span className={`pill pill-${color}`}>{children}</span>}
 function Panel({title,subtitle,action,children,className='',id}){return <section id={id} className={`panel ${className}`}><div className="panel-top"><div><h2>{title}</h2>{subtitle&&<p>{subtitle}</p>}</div>{action}</div>{children}</section>}
 function Empty({icon:Icon=Info,title='Nothing here yet',description,action}){return <div className="empty"><div className="empty-icon"><Icon size={23}/></div><h3>{title}</h3><p>{description}</p>{action}</div>}
-function Field({label,as='input',hint,...props}){const Comp=as;return <label className="field"><span>{label}</span><Comp {...props} className="field-input" />{hint&&<small>{hint}</small>}</label>}
+function Field({label,as='input',hint,...props}){if(as==='select')return <div className="field"><span>{label}</span><PremiumSelect {...props} aria-label={props['aria-label']||label} />{hint&&<small>{hint}</small>}</div>;const Comp=as;return <label className="field"><span>{label}</span><Comp {...props} className="field-input" />{hint&&<small>{hint}</small>}</label>}
 function Modal({title,subtitle,close,children}){useEffect(()=>{const key=e=>{if(e.key==='Escape')close()};document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key)},[close]);return <div className="modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}><div role="dialog" aria-modal="true" aria-label={title} className="modal"><div className="modal-heading"><div><h2>{title}</h2>{subtitle&&<p>{subtitle}</p>}</div><IconButton icon={X} label="Close dialog" onClick={close}/></div>{children}</div></div>}
 const nav=[{to:'/dashboard',label:'Dashboard',icon:LayoutDashboard},{to:'/calendar',label:'Family Calendar',icon:CalendarDays},{to:'/household',label:'Household Information',icon:Megaphone},{to:'/tasks',label:'Tasks & Chores',icon:ListTodo},{to:'/expenses',label:'Household Expenses',icon:Wallet},{to:'/settings',label:'Settings & Accessibility',icon:Settings2}];
-function AppShell(){const {data,loading,error,logout}=useApp();const [mobile,setMobile]=useState(false);const loc=useLocation();
+function AppShell(){const {data,loading,error,logout,welcomeUser,dismissWelcome}=useApp();const [mobile,setMobile]=useState(false);const loc=useLocation();
   useEffect(()=>{setMobile(false);window.scrollTo(0,0)},[loc.pathname]);
   useEffect(()=>{
     if(!mobile)return;
@@ -371,7 +379,7 @@ function AppShell(){const {data,loading,error,logout}=useApp();const [mobile,set
   <nav className="mobile-bottom-nav" aria-label="Mobile quick navigation">
     {[{to:'/dashboard',label:'Home',icon:LayoutDashboard},{to:'/calendar',label:'Calendar',icon:CalendarDays},{to:'/tasks',label:'Chores',icon:ListTodo},{to:'/expenses',label:'Expenses',icon:Wallet}].map(item=><NavLink key={item.to} to={item.to} className={({isActive})=>`mobile-bottom-link${isActive||loc.pathname.startsWith(item.to+'/')?' active':''}`}><item.icon aria-hidden="true" size={20}/><span>{item.label}</span></NavLink>)}
     <button type="button" className={`mobile-bottom-link${mobile||loc.pathname.startsWith('/household')||loc.pathname.startsWith('/settings')?' active':''}`} onClick={()=>setMobile(true)} aria-label="Open all pages" aria-expanded={mobile}><Menu size={20} aria-hidden="true"/><span>More</span></button>
-  </nav></div><Toast/></div>
+  </nav></div><Toast/>{welcomeUser&&<WelcomeModal user={welcomeUser} avatar={<ProfileAvatar member={welcomeUser}/>} onClose={dismissWelcome}/>}</div>
 }
 // IMPORTANT: PUBLIC, HARDCODED CLASS DEMONSTRATION LOGIN.
 // Both values below are readable by everyone visiting the deployed website and
@@ -387,7 +395,7 @@ function initialAuthForm(){
 }
 
 function Auth(){
-  const {acceptBootstrap,toast,error}=useApp();
+  const {acceptBootstrap,toast,error,showWelcome}=useApp();
   const [mode,setMode]=useState('login');
   const [form,setForm]=useState(initialAuthForm);
   const [working,setWorking]=useState(false);
@@ -409,7 +417,9 @@ function Auth(){
       // fetch it again before opening the Dashboard.
       const snapshot=await api('/auth/'+(mode==='create'?'register':mode)+'?full=1','POST',form);
       acceptBootstrap(snapshot);
-      toast(mode==='login'?'Welcome home!':mode==='join'?'Welcome to your household!':'Your family centre is ready!');
+      showWelcome(snapshot.user);
+      // The modal replaces the sign-in toast so the welcome isn't duplicated.
+      if(mode!=='login')toast(mode==='join'?'Welcome to your household!':'Your family centre is ready!');
     }catch(e){setMsg(e.message)}finally{setWorking(false)}
   };
   return <main className="auth-root">
@@ -426,7 +436,7 @@ function Auth(){
         <div className="auth-benefits" aria-label="Haven Home features">
           <span><CalendarCheck size={16}/> Shared plans</span>
           <span><Wallet size={16}/> Simple budgets</span>
-          <span><HavenLogo className="haven-benefit-emblem"/> Family first</span>
+          <span><Users size={16} strokeWidth={2.1} aria-hidden="true"/> Family first</span>
         </div>
         <div className="auth-preview-art" aria-label="Illustration of a Haven Home household dashboard">
           <img
@@ -440,7 +450,6 @@ function Auth(){
           />
         </div>
       </div>
-      <div className="auth-art-footer"><ShieldCheck size={16}/> Shared classroom demo access.</div>
     </section>
     <section className="auth-form-side" aria-label="Account access">
       <div className="auth-form-glow" aria-hidden="true"/>
@@ -455,20 +464,42 @@ function Auth(){
           <button type="button" aria-pressed={mode==='create'} className={mode==='create'?'chosen':''} onClick={()=>selectMode('create')}>Create household</button>
           <button type="button" aria-pressed={mode==='join'} className={mode==='join'?'chosen':''} onClick={()=>selectMode('join')}>Join family</button>
         </div>
-        {HAS_SHARED_LOGIN&&mode==='login'&&<div className="auth-shared-access" role="note">
-          <div className="auth-shared-access-message"><Users size={18} aria-hidden="true"/><div><strong>Shared class sign-in</strong><span>Demo access is shared publicly. Anyone opening this website can sign in and change this account’s household data.</span></div></div>
-          <button type="button" className="auth-shared-restore" onClick={resetSharedLogin}>Restore details</button>
-        </div>}
         <form onSubmit={submit} className="auth-form">
           {mode!=='login'&&<Field label="Your full name" name="name" value={form.name} onChange={change} required minLength={2} autoComplete="name" placeholder="e.g. Alex Santos"/>}
           {mode==='create'&&<Field label="Household name" name="household_name" value={form.household_name} onChange={change} required minLength={2} placeholder="e.g. The Santos Family"/>}
           {mode==='join'&&<Field label="Household invite code" name="invite_code" value={form.invite_code} onChange={change} required placeholder="Code from a family member"/>}
           <Field label="Email address" type="email" name="email" value={form.email} onChange={change} required autoComplete="email" placeholder="you@example.com"/>
-          <div className="auth-password-field"><Field label="Password" type={showPassword?'text':'password'} name="password" value={form.password} onChange={change} required minLength={mode==='login'?undefined:8} autoComplete={mode==='login'?'current-password':'new-password'} placeholder={mode==='login'?'Enter your password':'At least 8 characters'}/><button type="button" className="auth-password-toggle" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?'Hide password':'Show password'} aria-pressed={showPassword}>{showPassword?'Hide':'Show'}</button></div>
+          <div className="auth-password-field">
+            <label className="auth-password-label" htmlFor="haven-login-password">Password</label>
+            <div className="auth-password-control">
+              <input
+                id="haven-login-password"
+                className="field-input"
+                type={showPassword?'text':'password'}
+                name="password"
+                value={form.password}
+                onChange={change}
+                required
+                minLength={mode==='login'?undefined:8}
+                autoComplete={mode==='login'?'current-password':'new-password'}
+                placeholder={mode==='login'?'Enter your password':'At least 8 characters'}
+              />
+              <button
+                type="button"
+                className="auth-password-toggle"
+                onClick={()=>setShowPassword(v=>!v)}
+                aria-label={showPassword?'Hide password':'Show password'}
+                aria-pressed={showPassword}
+                aria-controls="haven-login-password"
+              >
+                {showPassword?<EyeOff size={15} aria-hidden="true"/>:<Eye size={15} aria-hidden="true"/>}
+                <span>{showPassword?'Hide':'Show'}</span>
+              </button>
+            </div>
+          </div>
           {(msg||error)&&<div role="alert" className="inline-error"><AlertCircle size={17}/>{msg||error}</div>}
-          <Button type="submit" loading={working} className="auth-submit">{working?(mode==='login'?'Signing you in…':mode==='create'?'Creating your family space…':'Joining your family space…'):(mode==='login'?'Continue to Haven':mode==='create'?'Create family space':'Join family space')} {!working&&<ArrowUpRight size={18}/>}</Button>
+          <Button type="submit" loading={working} className="auth-submit">{working?(mode==='login'?'Signing you in…':mode==='create'?'Creating your family space…':'Joining your family space…'):(mode==='login'?'Continue to Haven':mode==='create'?'Create family space':'Join family space')} {!working&&<ArrowRight className="auth-submit-arrow" size={18} aria-hidden="true"/>}</Button>
         </form>
-        <div className="auth-safe"><ShieldCheck size={18}/><span>Shared demo login: everyone who visits this public site can access the same account. Do not store private information here.</span></div>
         <p className="auth-footnote">A little more connected. A lot more organized.</p>
       </div>
     </section>

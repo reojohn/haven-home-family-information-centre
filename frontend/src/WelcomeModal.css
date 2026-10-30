@@ -1,0 +1,183 @@
+/* Haven Home | Landscape welcome illustration. Isolated from other modals. */
+.haven-welcome-backdrop {
+  position:fixed; inset:0; z-index:12000; display:grid; place-items:center;
+  box-sizing:border-box; padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
+  overflow-y:auto; background:rgba(8,31,25,.73);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  animation:haven-welcome-backdrop-in .25s ease both;
+}
+.haven-welcome-card {
+  --welcome-text:#18382d; --welcome-muted:#637c70;
+  box-sizing:border-box; position:relative; isolation:isolate;
+  width:min(100%,900px); min-height:316px; max-height:calc(100dvh - 36px);
+  overflow:hidden; display:grid; grid-template-columns:36.5% minmax(0,1fr);
+  text-align:left; color:var(--welcome-text);
+  border:1px solid rgba(207,226,211,.92); border-radius:26px;
+  background:linear-gradient(125deg,#fff 0%,#fbfdfb 58%,#f5faf4 100%);
+  box-shadow:0 38px 120px rgba(0,19,13,.44),0 4px 28px rgba(0,0,0,.08),inset 0 1px rgba(255,255,255,.96);
+  animation:haven-welcome-card-in .38s cubic-bezier(.22,1,.36,1) both;
+}
+.haven-welcome-art {
+  position:relative; min-width:0; overflow:hidden;
+  background:radial-gradient(circle at 49% 58%,#e6f5ec 0%,#edf7ef 45%,transparent 73%),
+             linear-gradient(150deg,#f9fcf9 6%,#e8f3ea 100%);
+  border-right:1px solid rgba(82,139,102,.075);
+}
+.haven-welcome-art:before,
+.haven-welcome-art:after {content:"";position:absolute;pointer-events:none;border-radius:50%;border:1px solid rgba(38,111,78,.13);}
+.haven-welcome-art:before {width:380px;height:380px;left:-152px;top:-224px;}
+.haven-welcome-art:after {width:430px;height:430px;left:-172px;top:-250px;}
+.haven-welcome-art-halo {
+  position:absolute; width:260px;height:260px; border-radius:50%; top:17px;left:calc(50% - 130px);
+  background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(179,218,191,.38));
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.58),0 0 0 1px rgba(33,112,77,.06);
+}
+.haven-welcome-character {
+  position:absolute; z-index:2; pointer-events:none; display:block;
+  width:102%; max-width:none; height:auto; max-height:104%;
+  object-fit:contain; object-position:center bottom;
+  left:-1%;bottom:-2px;
+  filter:drop-shadow(0 9px 16px rgba(17,66,45,.15));
+}
+.haven-welcome-art-spark {position:absolute;z-index:3;color:#b99554;pointer-events:none;}
+.haven-welcome-art-spark-left {top:40px;left:28px;}
+.haven-welcome-art-spark-right {right:29px;top:63px;}
+.haven-welcome-close {
+  position:absolute;z-index:5;top:16px;right:17px;
+  display:grid;place-items:center;width:39px;height:39px;padding:0;
+  border:1px solid rgba(42,102,70,.15);border-radius:12px;
+  background:rgba(246,250,245,.95);color:#345f4c;
+  cursor:pointer; transition:background .18s,transform .18s;
+}
+.haven-welcome-close:hover {background:#e5f1e8;transform:rotate(5deg);}
+.haven-welcome-content {
+  min-width:0; display:flex;flex-direction:column;
+  padding:26px 28px 28px 32px;
+}
+.haven-welcome-brand {display:flex;align-items:center;gap:11px;min-width:0;margin:0 38px 20px 0;}
+.haven-welcome-brand-logo {
+  display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;
+  border-radius:12px;background:linear-gradient(150deg,#f5faf1,#e6f2e9);
+  box-shadow:0 5px 15px rgba(19,72,46,.08);
+}
+.haven-welcome-brand-logo img {display:block;width:88%;height:88%;object-fit:contain;}
+.haven-welcome-brand-copy {display:flex;flex-direction:column;gap:3px;min-width:0;}
+.haven-welcome-brand-copy strong {font-weight:850;letter-spacing:.13em;font-size:.81rem;color:var(--welcome-text);}
+.haven-welcome-brand-copy span {font-size:.7rem;color:var(--welcome-muted);}
+.haven-welcome-eyebrow {
+  display:flex;align-items:center;gap:10px;margin:0 0 8px;
+  font-weight:800;font-size:.66rem;letter-spacing:.18em;color:#668475;
+}
+.haven-welcome-line {display:block;flex:0 0 22px;height:1px;background:linear-gradient(90deg,#b58b4f,transparent);}
+.haven-welcome-line:last-child {transform:rotate(180deg);}
+.haven-welcome-card h2 {
+  margin:0 0 7px;max-width:100%;font-family:'Plus Jakarta Sans','DM Sans',sans-serif;
+  font-size:clamp(1.95rem,3.4vw,2.67rem);line-height:1.17;letter-spacing:-.057em;
+  font-weight:850;overflow-wrap:anywhere;color:var(--welcome-text);
+}
+.haven-welcome-card h2 span {color:#16734d;}
+.haven-welcome-description {margin:0 0 20px;max-width:490px;color:var(--welcome-muted);font-size:.91rem;line-height:1.6;}
+.haven-welcome-bottom {margin-top:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.16fr) minmax(145px,1.12fr);gap:9px;align-items:stretch;}
+.haven-welcome-detail {display:flex;align-items:center;gap:8px;min-width:0;min-height:62px;padding:9px 10px;box-sizing:border-box;border-radius:14px;background:rgba(229,241,232,.75);}
+.haven-welcome-detail-icon {display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:50%;color:#25805b;background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px rgba(43,119,79,.13);}
+.haven-welcome-detail-text {display:flex;flex-direction:column;gap:3px;min-width:0;}
+.haven-welcome-detail-text strong {font-size:.71rem;line-height:1.25;color:var(--welcome-text);font-weight:800;overflow-wrap:anywhere;}
+.haven-welcome-detail-text small {font-size:.67rem;line-height:1.2;color:var(--welcome-muted);}
+.haven-welcome-okay {
+  display:flex;align-items:center;justify-content:center;gap:11px;min-width:0;
+  min-height:62px;padding:10px 13px;border:0;border-radius:13px;
+  background:linear-gradient(110deg,#27825c,#126549);color:white;font:inherit;
+  font-weight:800;font-size:.86rem;cursor:pointer;white-space:nowrap;
+  box-shadow:0 10px 22px rgba(29,108,74,.18);transition:transform .2s,box-shadow .2s,filter .2s;
+}
+.haven-welcome-okay svg {flex:0 0 auto;transition:transform .2s;}
+.haven-welcome-okay:hover {transform:translateY(-2px);box-shadow:0 13px 25px rgba(29,108,74,.25);filter:brightness(1.04);}
+.haven-welcome-okay:hover svg {transform:translateX(4px);}
+.haven-welcome-okay:focus-visible,.haven-welcome-close:focus-visible {outline:3px solid #8dba9a;outline-offset:3px;}
+
+/* Continuous Light / Dark preference slider. */
+:root[data-theme="fluid"] .haven-welcome-card {
+  --welcome-text:var(--fluid-ink,#18382d);--welcome-muted:var(--fluid-muted,#637c70);
+  background:linear-gradient(135deg,
+    color-mix(in srgb,#fff var(--theme-light,100%),#222e2a var(--theme-dark,0%)),
+    color-mix(in srgb,#f5faf4 var(--theme-light,100%),#111e1a var(--theme-dark,0%)));
+  border-color:color-mix(in srgb,#cfe2d3 var(--theme-light,100%),#596c60 var(--theme-dark,0%));
+}
+:root[data-theme="fluid"] .haven-welcome-art {
+  background:radial-gradient(circle at 48% 56%,color-mix(in srgb,#e3f4e9 var(--theme-light,100%),#374a3c var(--theme-dark,0%)),transparent 78%),
+    color-mix(in srgb,#eef7ef var(--theme-light,100%),#1b3027 var(--theme-dark,0%));
+}
+:root[data-theme="fluid"] .haven-welcome-detail {
+  background:color-mix(in srgb,#e5f1e8 var(--theme-light,100%),#30473b var(--theme-dark,0%));
+}
+:root[data-theme="fluid"] .haven-welcome-card h2 span {
+  color:color-mix(in srgb,#16734d var(--theme-light,100%),#e6c789 var(--theme-dark,0%));
+}
+:root[data-theme="dark"] .haven-welcome-card,
+:root[data-theme="luxe"] .haven-welcome-card {
+  --welcome-text:#f6f5eb;--welcome-muted:#c7d7cc;
+  background:linear-gradient(135deg,#24342c,#121f1b);
+  border-color:rgba(238,202,147,.27);
+}
+:root[data-theme="dark"] .haven-welcome-art,
+:root[data-theme="luxe"] .haven-welcome-art {
+  background:radial-gradient(circle at 48% 54%,rgba(114,147,107,.38),transparent 73%),
+    linear-gradient(155deg,#263c30,#17261e);
+  border-color:rgba(244,221,183,.13);
+}
+:root[data-theme="dark"] .haven-welcome-detail,
+:root[data-theme="luxe"] .haven-welcome-detail {background:rgba(255,255,255,.075);}
+:root[data-theme="dark"] .haven-welcome-detail-icon,
+:root[data-theme="luxe"] .haven-welcome-detail-icon {background:rgba(255,255,255,.11);color:#e3cf99;}
+:root[data-theme="dark"] .haven-welcome-card h2 span,
+:root[data-theme="luxe"] .haven-welcome-card h2 span {color:#e5c58e;}
+:root[data-theme="dark"] .haven-welcome-eyebrow,
+:root[data-theme="luxe"] .haven-welcome-eyebrow {color:#c8b894;}
+:root[data-theme="dark"] .haven-welcome-close,
+:root[data-theme="luxe"] .haven-welcome-close {background:rgba(255,255,255,.11);color:#f0e5d3;border-color:rgba(255,255,255,.2);}
+:root[data-theme="luxe"] .haven-welcome-card {
+  background:radial-gradient(ellipse 420px 240px at 35% -10%,rgba(197,153,90,.18),transparent 78%),linear-gradient(145deg,#283431,#141e1f);
+  border-color:rgba(226,195,143,.45);
+}
+:root[data-theme="luxe"] .haven-welcome-okay {color:#283429;background:linear-gradient(120deg,#f3d9a3,#dab06d);box-shadow:0 12px 25px rgba(0,0,0,.29);}
+
+@media(max-width:840px) and (min-width:641px) {
+  .haven-welcome-card {grid-template-columns:33% minmax(0,1fr);}
+  .haven-welcome-content {padding:24px 25px 25px;}
+  .haven-welcome-bottom {grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);}
+  .haven-welcome-okay {grid-column:1/-1;min-height:48px;}
+  .haven-welcome-character {width:112%;left:-6%;}
+}
+@media(max-width:640px) {
+  .haven-welcome-backdrop {padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));align-items:safe center;}
+  .haven-welcome-card {grid-template-columns:minmax(0,1fr);max-height:calc(100dvh - 24px);border-radius:22px;overflow-y:auto;}
+  .haven-welcome-art {height:167px;min-height:167px;border-right:0;border-bottom:1px solid rgba(82,139,102,.075);}
+  .haven-welcome-character {width:auto;height:185px;max-height:none;left:50%;transform:translateX(-50%);bottom:-2px;}
+  .haven-welcome-art-halo {height:175px;width:175px;top:6px;left:calc(50% - 87px);}
+  .haven-welcome-art-spark-left {top:18px;left:18%;}
+  .haven-welcome-art-spark-right {top:24px;right:19%;}
+  .haven-welcome-content {padding:19px 20px 21px;}
+  .haven-welcome-brand {margin-bottom:14px;}
+  .haven-welcome-brand-logo {height:39px;width:39px;flex-basis:39px;}
+  .haven-welcome-card h2 {font-size:clamp(1.68rem,6vw,2.18rem);}
+  .haven-welcome-description {font-size:.81rem;line-height:1.55;margin-bottom:17px;}
+  .haven-welcome-bottom {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .haven-welcome-detail {padding:8px;min-height:53px;}
+  .haven-welcome-detail-icon {width:30px;height:30px;flex-basis:30px;}
+  .haven-welcome-okay {grid-column:1/-1;min-height:46px;}
+  .haven-welcome-close {top:12px;right:12px;width:35px;height:35px;}
+}
+@media(max-width:360px) {
+  .haven-welcome-art {height:140px;min-height:140px;}
+  .haven-welcome-character {height:157px;}
+  .haven-welcome-content {padding:16px 15px;}
+  .haven-welcome-detail-text strong {font-size:.66rem;}
+  .haven-welcome-detail-text small {font-size:.62rem;}
+  .haven-welcome-detail-icon {display:none;}
+}
+@keyframes haven-welcome-backdrop-in {from {opacity:0;}to {opacity:1;}}
+@keyframes haven-welcome-card-in {from {opacity:0;transform:translateY(18px) scale(.97);}to {opacity:1;transform:translateY(0) scale(1);}}
+@media(prefers-reduced-motion:reduce) {
+  .haven-welcome-backdrop,.haven-welcome-card {animation:none!important;}
+  .haven-welcome-close,.haven-welcome-okay,.haven-welcome-okay svg {transition:none!important;}
+}

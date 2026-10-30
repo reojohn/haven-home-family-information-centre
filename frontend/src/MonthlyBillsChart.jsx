@@ -1,3 +1,4 @@
+import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {ArrowUpRight,Info} from 'lucide-react';
@@ -45,10 +46,10 @@ export default function MonthlyBillsChart({bills=[],compact=false}) {
       <p>{compact?'Your household costs over the last six months':'Compare your household bills across months and payment statuses'}</p>
     </div>{compact&&<Link className="text-link" to="/expenses">View analytics <ArrowUpRight size={15}/></Link>}</div>
     {!compact&&<div className="bill-chart-filters">
-      <label>Bill type<select aria-label="Filter bill type" value={safeType} onChange={reset(setType)}><option value="all">All bill types</option>{types.map(t=><option value={t} key={t}>{t}</option>)}</select></label>
-      <label>Payment status<select aria-label="Filter payment status" value={status} onChange={reset(setStatus)}><option value="all">Paid + unpaid</option><option value="paid">Paid only</option><option value="unpaid">Unpaid only</option></select></label>
-      <label>Time period<select aria-label="Filter months" value={period} onChange={e=>{setPeriod(e.target.value);setSelectedMonth('');}}><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="year">Calendar year</option></select></label>
-      {period==='year'&&<label>Year<select aria-label="Select year" value={year} onChange={e=>{setYear(e.target.value);setSelectedMonth('');}}>{years.map(y=><option key={y} value={y}>{y}</option>)}</select></label>}
+      <label>Bill type<PremiumSelect aria-label="Filter bill type" value={safeType} onChange={reset(setType)}><option value="all">All bill types</option>{types.map(t=><option value={t} key={t}>{t}</option>)}</PremiumSelect></label>
+      <label>Payment status<PremiumSelect aria-label="Filter payment status" value={status} onChange={reset(setStatus)}><option value="all">Paid + unpaid</option><option value="paid">Paid only</option><option value="unpaid">Unpaid only</option></PremiumSelect></label>
+      <label>Time period<PremiumSelect aria-label="Filter months" value={period} onChange={e=>{setPeriod(e.target.value);setSelectedMonth('');}}><option value="6">Last 6 months</option><option value="12">Last 12 months</option><option value="year">Calendar year</option></PremiumSelect></label>
+      {period==='year'&&<label>Year<PremiumSelect aria-label="Select year" value={year} onChange={e=>{setYear(e.target.value);setSelectedMonth('');}}>{years.map(y=><option key={y} value={y}>{y}</option>)}</PremiumSelect></label>}
     </div>}
     <div className="bill-chart-summary"><div><span>Total recorded in period</span><strong>{php(total)}</strong></div><div className="bill-chart-legend"><span><i className="bill-legend-dot paid"/>Paid {php(paid)}</span><span><i className="bill-legend-dot unpaid"/>Unpaid {php(unpaid)}</span></div></div>
     <div className="bill-chart-scroll" role="region" aria-label="Scrollable monthly bill chart" tabIndex={0}>
