@@ -42,3 +42,6 @@
 :root[data-theme="luxe"] .hic-info-search,:root[data-theme="luxe"] .hic-info-controls select,:root[data-theme="luxe"] .hic-info-pager button,:root[data-theme="luxe"] .hic-info-empty button{background:rgba(44,54,64,.94);color:#f8f3ed;border-color:rgba(255,255,255,.22);}
 :root[data-theme="luxe"] .hic-info-search input{color:#f8f3ed;}
 @media(max-width:640px){.hic-info-scroll{max-height:365px;padding:8px;}.hic-info-announcements .announcement-card{padding:12px;}.hic-info-contacts .contact-row{gap:7px;}.hic-info-pagination{align-items:stretch;}.hic-info-pager{justify-content:flex-end;}}
+
+/* Empty or demonstration phone numbers are visibly unavailable, never actionable. */
+.hic-phone-unavailable { opacity:.38; cursor:not-allowed; pointer-events:auto; }

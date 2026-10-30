@@ -107,6 +107,18 @@ class ContactIn(BaseModel):
     relation: str = Field(default='Family', max_length=80)
     phone: str = Field(min_length=3, max_length=40)
 
+    @field_validator('phone')
+    @classmethod
+    def callable_number(cls, value: str) -> str:
+        raw = value.strip()
+        digits = re.sub(r'\D', '', raw)
+        if (not re.fullmatch(r'\+?[\d\s().-]+', raw)
+                or not 7 <= len(digits) <= 15
+                or digits.startswith('000')
+                or len(set(digits)) == 1):
+            raise ValueError('Enter a valid phone number (7–15 digits). Placeholder numbers cannot be called.')
+        return raw
+
 class EnergyIn(BaseModel):
     month: str = Field(pattern=r'^\d{4}-(0[1-9]|1[0-2])$')
     kwh: float = Field(ge=0, le=1000000)

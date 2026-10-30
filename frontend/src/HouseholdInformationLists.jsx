@@ -2,6 +2,7 @@ import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo,useRef,useState} from 'react';
 import {ChevronLeft,ChevronRight,Search,X,Phone,Trash2,Megaphone,Plus} from 'lucide-react';
 import './HouseholdInformationLists.css';
+import {callablePhone,phoneHref} from './contactPhone.js';
 
 /* Both lists operate on already household-scoped data. No extra API reads or record changes. */
 function RecordsFrame({kind,query,onQuery,filteredCount,total,pageSize,onPageSize,page,totalPages,onPage,scrollRef,children}) {
@@ -85,8 +86,10 @@ export function ContactRecords({records=[],displayText,onAdd,onDelete}) {
   return <RecordsFrame kind="contacts" query={query} onQuery={changeQuery} filteredCount={filtered.length} total={records.length} pageSize={pageSize} onPageSize={changePageSize} page={currentPage} totalPages={pageCount} onPage={changePage} scrollRef={scrollRef}>
     {visible.length?<div className="contact-list hic-info-contacts">{visible.map(c=><div className="contact-row" key={c.id}>
       <div className="contact-avatar">{displayText(c.name,c.is_demo,'C').slice(0,1)}</div>
-      <div className="contact-text"><strong>{displayText(c.name,c.is_demo,'Contact')}</strong><span>{displayText(c.relation,c.is_demo,'Family')} · {c.phone}</span></div>
-      <a className="icon-button" href={`tel:${String(c.phone||'').replace(/[^+\d]/g,'')}`} aria-label={`Call ${displayText(c.name,c.is_demo,'contact')}`} title="Call contact"><Phone size={17}/></a>
+      <div className="contact-text"><strong>{displayText(c.name,c.is_demo,'Contact')}</strong><span>{displayText(c.relation,c.is_demo,'Family')} · {c.phone}{c.is_demo?' · Demo number':!callablePhone(c.phone)?' · Calling unavailable':''}</span></div>
+      {!c.is_demo && callablePhone(c.phone)
+        ? <a className="icon-button" href={phoneHref(c.phone)} aria-label={`Call ${displayText(c.name,c.is_demo,'contact')}`} title="Call contact"><Phone size={17}/></a>
+        : <span className="icon-button hic-phone-unavailable" role="img" aria-label="Phone number unavailable for calling" title="A valid, non-demo phone number is required to call"><Phone size={17}/></span>}
       <button type="button" className="icon-button hic-info-delete" aria-label={`Remove ${displayText(c.name,c.is_demo,'contact')}`} onClick={()=>onDelete(c.id)} title="Remove contact"><Trash2 size={17}/></button>
     </div>)}</div>:<div className="hic-info-empty"><Phone size={25}/><strong>{query?'No matching contacts':'No contacts saved'}</strong><p>{query?'Try searching by name, relationship, or phone number.':'Save important family or emergency numbers.'}</p>{!query&&<button type="button" onClick={onAdd}><Plus size={16}/> Add contact</button>}{query&&<button type="button" onClick={()=>changeQuery('')}>Clear search</button>}</div>}
   </RecordsFrame>;

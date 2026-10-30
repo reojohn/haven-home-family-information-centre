@@ -3050,3 +3050,7 @@ h1,h2,h3 { text-wrap: balance; }
 @media(prefers-reduced-motion:reduce){
   .device-type-trigger,.device-type-chevron,.device-type-option {transition:none;}
 }
+
+/* Input correction is announced without shifting the rest of the contact form. */
+.hic-phone-error { color:#ac423a; font-size:.8rem; line-height:1.55; margin: -4px 0 2px; }
+[data-theme="luxe"] .hic-phone-error { color:#ffb7ab; }
