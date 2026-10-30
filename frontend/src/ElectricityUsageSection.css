@@ -1,0 +1,52 @@
+/* Electricity Usage & History lives in Household Expenses, with its own compact history drawer. */
+.electricity-expenses-panel { --electricity-accent:#488f70; --electricity-highlight:#e2b477; --electricity-grid:color-mix(in srgb,var(--muted) 21%,transparent); min-width:0; margin-bottom:19px; }
+.electricity-section-top,.electricity-trend-head,.electricity-form-actions,.electricity-inspected {display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.electricity-section-top {margin-bottom:19px;align-items:flex-start}
+.electricity-section-top h2 {font-size:1.1rem;font-weight:850;letter-spacing:-.045em;margin:6px 0;color:var(--ink)}
+.electricity-section-top p {margin:0;font-size:.78rem;color:var(--muted);line-height:1.6}
+.electricity-kicker {display:inline-flex;align-items:center;gap:7px;letter-spacing:.12em;font-size:.62rem;font-weight:850;color:var(--green)}
+.electricity-add-btn {display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.electricity-metrics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 20px}
+.electricity-metric {min-width:0;display:flex;flex-direction:column;gap:7px;padding:16px 17px;border:1px solid var(--line);border-radius:13px;background:var(--surface-alt)}
+.electricity-metric>span {font-size:.72rem;color:var(--muted);font-weight:650}
+.electricity-metric strong {font-size:1.18rem;letter-spacing:-.05em;color:var(--ink);overflow-wrap:anywhere}
+.electricity-metric small {font-size:.7rem;color:var(--muted);line-height:1.5}
+.electricity-metric strong.electricity-rise {color:#bc7e3f}
+.electricity-metric strong.electricity-fall {color:var(--green)}
+.electricity-trend-head {margin-bottom:12px}
+.electricity-trend-head>div {display:flex;flex-direction:column;gap:4px}
+.electricity-trend-head strong {font-size:.87rem;color:var(--ink)}
+.electricity-trend-head>div span,.electricity-trend-head label {font-size:.72rem;color:var(--muted)}
+.electricity-trend-head select,.electricity-month-picker select,.electricity-fields input {padding:9px 11px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:9px;min-height:37px;max-width:100%}
+.electricity-trend-head select {margin-left:8px}
+.electricity-chart-wrap {border:1px solid var(--line);background:var(--surface-alt);border-radius:13px;padding:12px 14px}
+.electricity-usage-svg {display:block;width:100%;height:auto;min-height:165px;max-height:290px}
+.electricity-trend-footer {display:flex;justify-content:space-between;gap:10px;font-size:.7rem;color:var(--muted);margin:-4px 3px 8px}
+.electricity-month-picker {border-top:1px solid var(--line);padding:12px 3px 1px;display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;font-size:.75rem;color:var(--muted)}
+.electricity-month-picker select {min-width:176px}
+.electricity-inspected {border:1px solid var(--line);border-radius:11px;margin-top:10px;padding:12px 15px;font-size:.76rem;color:var(--muted);background:color-mix(in srgb,var(--surface-alt) 67%, transparent)}
+.electricity-inspected>span:first-child {display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.electricity-inspected strong {color:var(--ink)}
+.electricity-history-toggle {display:flex;justify-content:flex-start;margin:18px 0 9px}
+.electricity-history-toggle button {display:flex;gap:8px;align-items:center;font-size:.78rem;font-weight:750;color:var(--green);background:transparent;border:0;padding:9px 0;cursor:pointer}
+.electricity-history-toggle button:hover {text-decoration:underline}
+.electricity-history-toggle button span {color:var(--muted)}
+.electricity-disclaimer {display:flex;gap:9px;align-items:flex-start;font-size:.69rem;line-height:1.65;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin:13px 0 0}
+.electricity-disclaimer svg {flex:none;margin-top:1px}
+.electricity-entry-form {padding:16px;margin-bottom:19px;border:1px solid var(--line);border-radius:12px;background:var(--surface-alt)}
+.electricity-fields {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.electricity-fields label {display:flex;flex-direction:column;gap:7px;font-size:.74rem;color:var(--ink);font-weight:700}
+.electricity-fields input {width:100%;min-width:0}
+.electricity-form-actions {margin-top:14px}
+.electricity-form-actions span {font-size:.7rem;color:var(--muted)}
+.electricity-form-actions button {display:flex;align-items:center;gap:7px}
+.electricity-empty-graph {min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;border-radius:12px;background:var(--surface-alt);color:var(--muted)}
+.electricity-empty-graph strong {color:var(--ink);font-size:.88rem}
+.electricity-empty-graph span {font-size:.74rem}
+.electricity-expenses-panel :is(button,select,input):focus-visible {outline:2px solid var(--green);outline-offset:2px}
+:root[data-theme="dark"] .electricity-expenses-panel,:root[data-theme="luxe"] .electricity-expenses-panel {--electricity-accent:#78b899;--electricity-highlight:#e0bd7f}
+:root[data-theme="luxe"] .electricity-expenses-panel {background:linear-gradient(135deg,rgba(28,36,44,.94),rgba(16,25,33,.93));border-color:rgba(255,255,255,.19)}
+:root[data-theme="luxe"] .electricity-chart-wrap,:root[data-theme="luxe"] .electricity-metric,:root[data-theme="luxe"] .electricity-entry-form {background:rgba(13,23,31,.88);border-color:rgba(255,255,255,.2)}
+:root[data-theme="luxe"] .electricity-trend-head select,:root[data-theme="luxe"] .electricity-month-picker select,:root[data-theme="luxe"] .electricity-fields input {background:rgba(36,46,56,.96);border-color:rgba(255,255,255,.2);color:#f8f3ed}
+@media(max-width:750px) {.electricity-metrics {grid-template-columns:1fr;gap:9px}.electricity-fields {grid-template-columns:1fr}.electricity-usage-svg {min-height:120px}.electricity-section-top {gap:11px}}
+@media(max-width:440px) {.electricity-chart-wrap {padding:8px}.electricity-month-picker select {width:100%}.electricity-section-top .electricity-add-btn {width:100%;justify-content:center}}

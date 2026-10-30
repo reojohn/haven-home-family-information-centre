@@ -1,0 +1,61 @@
+# Haven Home — source-controlled files only
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Frontend generated dependencies and builds
+node_modules/
+dist/
+build/
+.vite/
+
+# Credentials and local environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.template
+
+# Databases and private local application data
+backend/data/
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Backups and private key material
+*.pem
+*.key
+*.p12
+*.pfx
+*.bak
+*.log
+
+# OS and editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local household-specific demo data and generated SQL seed exports
+/00_PREVIEW_HOUSEHOLD_AND_MEMBERS.sql
+/01_LOAD_32_FAMILY_CHORES.sql
+/02_VERIFY_INSERTED_CHORES.sql
+/03_OPTIONAL_REMOVE_THIS_DEMO_BATCH.sql
+/CHORES_PREVIEW.csv
+/README_FIRST.md
+
+# Local source archives or downloaded backups
+*.zip
+*.7z
+*.rar
