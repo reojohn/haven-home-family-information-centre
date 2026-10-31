@@ -62,3 +62,22 @@
 @media(max-width:800px) { .family-panel { left:0; width:min(400px,100vw); max-width:100vw; box-shadow:20px 0 70px rgba(0,0,0,.25); } }
 @media(max-width:420px) { .family-panel-header { padding:21px 16px 18px; } .family-panel-scroll { padding:22px 15px 15px; } .family-panel-footer { padding-left:17px; padding-right:17px; } }
 @media(prefers-reduced-motion:reduce) { .family-panel,.family-panel-backdrop { animation:none; } .family-panel-member,.family-chip-trigger { transition:none!important; } }
+
+/* Household-owner-only account removal with an explicit second confirmation. */
+.family-panel-remove-section { margin-top:18px; }
+.family-panel-remove-trigger { display:inline-flex; align-items:center; justify-content:center; gap:9px; width:100%; padding:12px 14px; border:1px solid #d9a5a5; border-radius:11px; color:#a23c3c; background:color-mix(in srgb, var(--fp-bg) 88%, #fbe4e4); font-weight:800; font-size:.8rem; }
+.family-panel-remove-trigger:hover { border-color:#bd6c6c; background:color-mix(in srgb,var(--fp-bg) 77%,#fbe4e4); }
+.family-panel-remove-confirm { border:1px solid #d9a5a5; border-radius:13px; padding:16px; background:color-mix(in srgb,var(--fp-bg) 87%,#f8dede); }
+.family-panel-remove-confirm>strong { color:var(--fp-ink); font-size:.88rem; }
+.family-panel-remove-confirm p { margin:9px 0 15px; color:var(--fp-muted); font-size:.76rem; line-height:1.6; }
+.family-panel-remove-buttons { display:flex; justify-content:flex-end; gap:9px; flex-wrap:wrap; }
+.family-panel-remove-buttons button { padding:10px 13px; border-radius:9px; font-weight:750; font-size:.75rem; }
+.family-panel-remove-cancel { background:var(--fp-bg); color:var(--fp-ink); border:1px solid var(--fp-line); }
+.family-panel-remove-confirm-btn { background:#a93838; color:#fff; border:1px solid #a93838; }
+.family-panel-remove-confirm-btn:hover:not(:disabled) { background:#8d2626; }
+.family-panel-remove-buttons button:disabled { cursor:wait; opacity:.6; }
+.family-panel-remove-section button:focus-visible { outline:2px solid var(--green-strong,#1b664b); outline-offset:3px; }
+
+.family-panel-remove-password { display:grid; gap:6px; margin:0 0 13px; color:var(--fp-ink); font-size:.73rem; font-weight:750; }
+.family-panel-remove-password input { width:100%; min-width:0; border:1px solid var(--fp-line); border-radius:9px; padding:10px 12px; background:var(--fp-bg); color:var(--fp-ink); font:inherit; }
+.family-panel-remove-password input:focus-visible { outline:2px solid var(--green-strong,#1b664b); outline-offset:2px; }

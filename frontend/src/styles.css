@@ -10,3 +10,133 @@
 @media(max-width:1050px){.stats-grid{grid-template-columns:repeat(2,1fr)}.stats-three{grid-template-columns:repeat(3,1fr)}.dashboard-grid,.household-grid{grid-template-columns:1fr}.calendar-layout,.settings-grid{grid-template-columns:1fr}.calendar-right{grid-template-columns:1fr 1fr}.welcome-banner h2{font-size:1.55rem}.form-layout,.bill-detail-layout{grid-template-columns:1fr}.form-side-note{max-width:none}.auth-root{grid-template-columns:1fr 1fr}.auth-art{padding:28px}.auth-art h1{font-size:2.65rem}}
 @media(max-width:800px){.sidebar{transform:translateX(-101%);transition:transform .2s;width:270px;min-width:270px;box-shadow:12px 0 40px rgba(0,0,0,.12)}.sidebar.sidebar-open{transform:translateX(0)}.sidebar-scrim.visible{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:39}.side-close,.mobile-menu{display:inline-flex}.side-close{margin-left:auto;color:#e0eee3}.app-main{margin-left:0}.content{padding:25px 20px 40px}.topbar{height:67px;padding:0 18px}.auth-root{grid-template-columns:1fr}.auth-art{display:none}.auth-form-side{min-height:100vh}.auth-mobile-logo{display:flex;gap:10px;align-items:center;color:var(--green);font-family:Manrope;font-size:1.25rem;font-weight:800;margin-bottom:50px}.auth-mobile-logo svg{color:var(--green)}}
 @media(max-width:640px){.content{padding:22px 14px 36px}.topbar{padding:0 14px}.today-date{display:none}.page-header{align-items:flex-start;flex-direction:column;margin-bottom:21px}.page-header h1{font-size:1.65rem}.page-actions{width:100%}.page-actions .btn{flex:1}.welcome-banner{padding:24px 22px;min-height:210px}.welcome-banner h2{font-size:1.38rem}.welcome-banner p{font-size:.75rem}.banner-art{display:none}.stats-grid,.stats-three{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat-card{padding:13px;min-height:128px}.stat-card>strong{font-size:1.32rem}.stat-top>span{font-size:.69rem}.stat-card>small{font-size:.63rem}.dashboard-grid{gap:13px}.panel{padding:16px}.panel-top{gap:10px;flex-wrap:wrap}.panel-top>div:first-child{flex:1}.panel-top .btn{font-size:.7rem;min-height:38px;padding:7px 10px}.calendar-layout,.calendar-right{grid-template-columns:1fr}.cal-day{min-height:62px}.cal-day>span{height:24px;width:24px}.cal-event-dots{gap:2px}.cal-event-dots i{height:4px;width:4px}.cal-weekdays{margin-top:20px}.calendar-month h2{font-size:.9rem}.calendar-legend{gap:12px}.two-fields{grid-template-columns:1fr;gap:0}.household-grid,.settings-grid{grid-template-columns:1fr}.energy-glance{flex-direction:column;align-items:stretch}.energy-glance svg{max-height:100px}.setting-row{flex-wrap:wrap}.invite-row{justify-content:start}.auth-form-side{padding:30px 19px}.auth-card h2{font-size:1.7rem}.auth-switch button{font-size:.68rem}.demo-notice{align-items:flex-start;flex-wrap:wrap}.demo-notice .btn{width:100%}.bill-amount{font-size:2rem}.bill-detail-head{flex-wrap:wrap}.detail-info-grid{grid-template-columns:1fr}.form-buttons{flex-wrap:wrap}.form-buttons .btn{flex:1}.toast{right:13px;bottom:13px}.preview-mini-grid{grid-template-columns:1fr}.footer{padding-bottom:20px}.settings-grid .panel{padding:18px}}
+
+
+/* Full-screen family loading backdrop. Only CSS and its local illustration are changed.
+   Spinner and copy stay as HTML, not baked into the picture. */
+.boot {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #f7fbf7;
+  background-image: url('/illustrations/family-centre-loading-background.png');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  text-align: center;
+  color: #153c30;
+}
+/* A slight fade ensures the spinner/text remain readable on extra-wide monitors. */
+.boot::after {
+  content: '';
+  position: absolute;
+  inset: 62% 0 0;
+  z-index: 0;
+  background: linear-gradient(180deg,
+    rgba(250,253,249,0) 0%,
+    rgba(250,253,249,.12) 32%,
+    rgba(250,253,249,.58) 100%);
+  pointer-events: none;
+}
+.boot .spin {
+  position: absolute;
+  z-index: 1;
+  top: 73%;
+  left: 50%;
+  display: block;
+  box-sizing: border-box;
+  margin: 0 0 0 -23px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 5px solid rgba(40,125,82,.18);
+  border-top-color: #227c53;
+  border-right-color: #438e6c;
+  background: transparent;
+  box-shadow: none;
+  animation: rotate .9s linear infinite;
+}
+.boot p {
+  position: absolute;
+  z-index: 1;
+  top: calc(73% + 64px);
+  left: 20px;
+  right: 20px;
+  margin: 0;
+  padding: 0;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: clamp(17px, 1.8vw, 25px);
+  font-weight: 750;
+  line-height: 1.4;
+  letter-spacing: -.025em;
+  color: #153c30;
+  text-shadow: 0 1px 8px rgba(255,255,255,.65);
+}
+/* Maintain the welcoming image in every appearance theme, including Haven Luxe. */
+:root[data-theme="dark"] .boot,
+:root[data-theme="luxe"] .boot {
+  background-color: #f7fbf7;
+  background-image: url('/illustrations/family-centre-loading-background.png');
+  color: #153c30;
+}
+:root[data-theme="dark"] .boot p,
+:root[data-theme="luxe"] .boot p { color: #153c30; }
+@media (max-width: 640px) {
+  .boot { background-position: center center; }
+  .boot .spin { top: 75%; width: 39px; height: 39px; border-width: 4px; margin-left: -19.5px; }
+  .boot p { top: calc(75% + 52px); font-size: clamp(15px, 4vw, 19px); }
+}
+@media (max-height: 520px) and (min-width: 641px) {
+  .boot .spin { top: 72%; width: 34px; height: 34px; margin-left: -17px; border-width: 3px; }
+  .boot p { top: calc(72% + 42px); font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot .spin { animation: none; }
+}
+
+
+/* Mobile-specific illustrated opening screen. Desktop retains the existing landscape artwork.
+   The spinner and loading message are still real elements, never baked into the PNG. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .boot,
+  :root[data-theme="dark"] .boot,
+  :root[data-theme="luxe"] .boot {
+    background-color: #f8faf6;
+    background-image: url('/illustrations/family-centre-loading-mobile.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+
+  /* The mobile artwork already includes clean white space beneath the family. */
+  .boot::after { background: none; }
+
+  .boot .spin {
+    top: 77%;
+    width: 38px;
+    height: 38px;
+    margin-left: -19px;
+    border-width: 4px;
+  }
+  .boot p {
+    top: calc(77% + 52px);
+    left: 14px;
+    right: 14px;
+    font-size: clamp(15px, 3.9vw, 18px);
+    font-weight: 750;
+    line-height: 1.4;
+    color: #153c30;
+  }
+  :root[data-theme="dark"] .boot p,
+  :root[data-theme="luxe"] .boot p { color: #153c30; }
+}
+
+/* A shorter portrait phone needs the loading elements a little higher. */
+@media (max-width: 760px) and (orientation: portrait) and (max-height: 670px) {
+  .boot .spin { top: 75%; }
+  .boot p { top: calc(75% + 49px); }
+}

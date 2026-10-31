@@ -1,0 +1,120 @@
+/* Open-air seven-segment clock: no frame or backing panel on the Dashboard hero. */
+.home-welcome-grid .home-greeting-footer {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  flex-wrap:nowrap;
+  gap:9px;
+  max-width:100%;
+}
+.hero-digital-clock {
+  --clock-face:#081513;
+  --clock-face-lower:#0b201b;
+  --clock-ink:#f3fcf7;
+  --clock-accent:#7bd9af;
+  box-sizing:border-box;
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  flex:0 0 auto;
+  width:max-content;
+  max-width:100%;
+  min-height:0;
+  padding:1px 0 0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:var(--clock-ink);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+  isolation:isolate;
+  overflow:visible;
+}
+.hero-digital-clock::before,
+.hero-digital-clock::after {content:none;display:none;}
+.hero-clock-main {
+  display:flex;
+  flex:1 1 auto;
+  min-width:0;
+  align-items:center;
+  position:relative;
+  padding-bottom:10px;
+  gap:7px;
+}
+.hero-clock-meridiem {
+  flex:0 0 auto;
+  align-self:center;
+  color:#d0f3df;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.07em;
+}
+.hero-clock-digits {display:inline-flex;align-items:center;gap:1px;flex:0 0 auto;}
+.hero-clock-digit {display:block;width:25px;height:46px;flex:none;overflow:visible;}
+.hero-clock-segment {fill:var(--clock-ink);opacity:.075;}
+.hero-clock-segment.is-lit {opacity:1;filter:drop-shadow(0 0 1px rgba(209,255,231,.21));}
+.hero-clock-colon {
+  display:inline-flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  width:10px;
+  height:43px;
+  gap:10px;
+  margin:0 2px;
+  flex:none;
+}
+.hero-clock-colon i {display:block;width:5px;height:5px;border-radius:50%;background:var(--clock-ink);}
+.hero-clock-zone {
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  color:#bee7d1;
+  font-size:7px;
+  line-height:1;
+  letter-spacing:.16em;
+  font-weight:800;
+  text-align:center;
+}
+.hero-clock-divider {width:1px;height:53px;flex:none;background:rgba(207,248,223,.55);}
+.hero-clock-details {
+  display:flex;
+  flex:0 0 46px;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  text-align:center;
+  min-width:0;
+}
+.hero-clock-detail {display:flex;align-items:center;flex-direction:column;gap:1px;line-height:1.04;min-height:17px;}
+.hero-clock-detail strong {font-size:11px;font-weight:800;letter-spacing:.025em;color:var(--clock-ink);}
+.hero-clock-detail small {font-size:6.3px;letter-spacing:.13em;font-weight:750;color:#95b5a5;}
+.hero-clock-mini-digits {display:flex;gap:1px;height:12px;}
+.hero-clock-mini-digits .hero-clock-digit {width:7.2px;height:12px;}
+/* All appearance modes display the digits directly on the green hero. */
+:root[data-theme="luxe"] .hero-digital-clock {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+:root[data-theme="luxe"] .hero-clock-zone {color:#c1b69c;}
+@media(max-width:1390px) {
+  .hero-digital-clock {width:max-content;gap:10px;padding:1px 0 0;min-height:0;}
+  .hero-clock-digit {width:23.4px;height:43px;}
+  .hero-clock-details {flex-basis:44px;}
+}
+@media(max-width:390px) {
+  .hero-digital-clock {width:max-content;min-height:0;gap:9px;padding:1px 0 0;}
+  .hero-clock-digit {width:21.4px;height:39px;}
+  .hero-clock-colon {width:8px;height:39px;margin:0 1px;}
+  .hero-clock-details {flex-basis:42px;}
+  .hero-clock-meridiem {font-size:8px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .hero-digital-clock,.hero-clock-segment {transition:none;}
+}

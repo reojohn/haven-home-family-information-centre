@@ -1,18 +1,21 @@
 import {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {Link} from 'react-router-dom';
-import {ArrowLeft, ChevronRight, Crown, House, ShieldCheck, UserPlus, Users, X} from 'lucide-react';
+import {ArrowLeft, ChevronRight, Crown, House, ShieldCheck, Trash2, UserPlus, Users, X} from 'lucide-react';
 import './FamilyMembersPanel.css';
 
 /**
- * Read-only household directory. It uses the members already supplied by /api/bootstrap.
- * No extra requests, schema changes, or new household permissions are required.
+ * Household directory backed by /api/bootstrap. Only the founding account may
+ * remove another household account; the backend independently enforces it.
  */
-export default function FamilyMembersPanel({household, members, user, renderAvatar, onClose, onNavigate}){
+export default function FamilyMembersPanel({household, members, user, renderAvatar, initialSelectedMemberId=null, onRemoveMember, onClose, onNavigate}){
   const panelRef = useRef(null);
   const closeRef = useRef(null);
   const backRef = useRef(null);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState(initialSelectedMemberId);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [ownerPassword, setOwnerPassword] = useState('');
+  const [removingId, setRemovingId] = useState(null);
   const list = Array.isArray(members) && members.length ? members : [user];
   const ownerId = list[0]?.id; // Bootstrap orders members by ID; the first account created the household.
   const selected = list.find(member => member.id === selectedId) || null;
@@ -51,6 +54,19 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
     if(selectedId !== null)backRef.current?.focus();
   }, [selectedId]);
 
+  const canRemove = user?.is_household_owner === true;
+  const removeSelected = async () => {
+    if(!canRemove || !selected || selected.id === user.id || removingId !== null || !confirmRemove || !ownerPassword)return;
+    setRemovingId(selected.id);
+    try {
+      await onRemoveMember(selected,ownerPassword);
+      setSelectedId(null);
+      setConfirmRemove(false);
+      setOwnerPassword('');
+    } catch {
+      // The shared request handler shows an error toast; keep confirmation open.
+    } finally {setRemovingId(null);}
+  };
   const memberRole = member => member.id === ownerId ? 'Household owner' : 'Family member';
   const openPage = () => {onNavigate();};
 
@@ -69,7 +85,7 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
 
       <div className="family-panel-scroll">
         {selected ? <div className="family-panel-profile" key={selected.id}>
-          <button ref={backRef} type="button" className="family-panel-back" onClick={()=>setSelectedId(null)}><ArrowLeft size={17}/> Back to all members</button>
+          <button ref={backRef} type="button" className="family-panel-back" onClick={()=>{setSelectedId(null);setConfirmRemove(false);setOwnerPassword('')}} disabled={removingId!==null}><ArrowLeft size={17}/> Back to all members</button>
           <div className="family-panel-profile-card">
             <div className="family-panel-profile-avatar">{renderAvatar(selected,list.indexOf(selected))}</div>
             <span className="family-panel-profile-label">HOUSEHOLD MEMBER</span>
@@ -78,11 +94,25 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
             <p>{selected.id===user.id?'This is your profile in the family space.':'This person is a registered member of your shared household.'}</p>
             {selected.id === user.id && <Link to="/settings#profile-avatar" onClick={openPage} className="family-panel-primary-link">Edit my profile <ChevronRight size={17}/></Link>}
           </div>
+          {canRemove && selected.id !== user.id && <div className="family-panel-remove-section">
+            {!confirmRemove ? <button type="button" className="family-panel-remove-trigger" onClick={()=>setConfirmRemove(true)}><Trash2 size={17}/> Remove family member</button>
+              : <div className="family-panel-remove-confirm" role="group" aria-label={`Confirm removal of ${selected.name}`}>
+                  <strong>Remove {selected.name}?</strong>
+                  <p>This permanently deletes their Haven Home login and signs them out. Assigned chores become unassigned; chores they created stay in this household under the owner's management. Your current invite code will be replaced.</p>
+                  <label className="family-panel-remove-password">Confirm with your account password
+                    <input type="password" autoComplete="current-password" value={ownerPassword} onChange={event=>setOwnerPassword(event.target.value)} disabled={removingId!==null} placeholder="Your account password" maxLength={128}/>
+                  </label>
+                  <div className="family-panel-remove-buttons">
+                    <button type="button" className="family-panel-remove-cancel" onClick={()=>{setConfirmRemove(false);setOwnerPassword('')}} disabled={removingId!==null}>Cancel</button>
+                    <button type="button" className="family-panel-remove-confirm-btn" onClick={removeSelected} disabled={removingId!==null || !ownerPassword} aria-busy={removingId!==null}>{removingId!==null?'Removing…':'Yes, remove account'}</button>
+                  </div>
+                </div>}
+          </div>}
           <div className="family-panel-info-note"><ShieldCheck size={18}/><span>Members can view household profiles. Personal account details and permissions remain private.</span></div>
         </div> : <>
           <div className="family-panel-intro"><span className="family-panel-section-label"><Users size={16}/> FAMILY MEMBERS</span><span className="family-panel-count">{list.length} total</span></div>
           <div className="family-panel-member-list">
-            {list.map((member,index)=><button key={member.id} type="button" className="family-panel-member" onClick={()=>setSelectedId(member.id)} aria-label={`View ${member.name || 'family member'} profile`}>
+            {list.map((member,index)=><button key={member.id} type="button" className="family-panel-member" onClick={()=>{setSelectedId(member.id);setConfirmRemove(false);setOwnerPassword('')}} aria-label={`View ${member.name || 'family member'} profile`}>
               <span className="family-panel-member-avatar">{renderAvatar(member,index)}</span>
               <span className="family-panel-member-details"><strong>{member.name || 'Family member'}</strong><small>{member.id===user.id?'You · ':''}{memberRole(member)}</small></span>
               {member.id===ownerId&&<Crown className="family-panel-owner-icon" size={16} aria-label="Household owner"/>}

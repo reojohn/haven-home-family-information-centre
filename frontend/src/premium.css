@@ -3054,3 +3054,71 @@ h1,h2,h3 { text-wrap: balance; }
 /* Input correction is announced without shifting the rest of the contact form. */
 .hic-phone-error { color:#ac423a; font-size:.8rem; line-height:1.55; margin: -4px 0 2px; }
 [data-theme="luxe"] .hic-phone-error { color:#ffb7ab; }
+
+
+/* Custom Sunhours day/night icon markers supplied by the project. */
+.sun-ref-current { filter: drop-shadow(0 4px 10px rgba(8,35,24,.18)); }
+.sun-ref-current-day { filter: drop-shadow(0 5px 10px rgba(235,154,42,.28)); }
+.sun-ref-current-night { filter: drop-shadow(0 5px 12px rgba(72,126,255,.22)); }
+.sun-ref-marker-icon {
+  overflow: visible;
+}
+.home-welcome-grid .sun-ref-header h2 {
+  text-transform:none;
+}
+@media (max-width: 900px) {
+  .sun-ref-marker-icon { }
+}
+
+
+/* Five-person household hero: show all five members without clipping the last avatar.
+   Only the five-member row is compacted; other family counts keep their styling. */
+.home-welcome-grid .home-member-grid.home-member-grid-five {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-content: stretch;
+  align-items: center;
+  align-content: center;
+  gap: clamp(4px, .5vw, 9px);
+  width: 100%;
+}
+.home-welcome-grid .home-member-grid-five .home-member {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  flex: none;
+}
+.home-welcome-grid .home-member-grid-five .home-member-art {
+  width: clamp(38px, 3.45vw, 62px);
+  height: clamp(38px, 3.45vw, 62px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  margin: 0 auto 5px;
+}
+.home-welcome-grid .home-member-grid-five .home-member strong {
+  font-size: clamp(.62rem, .72vw, .78rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.home-welcome-grid .home-member-grid-five .home-member > span {
+  font-size: clamp(.56rem, .61vw, .68rem);
+  white-space: nowrap;
+}
+@media (max-width: 1170px) {
+  .home-welcome-grid .home-member-grid-five .home-member-art {
+    width: clamp(42px, 6vw, 64px);
+    height: clamp(42px, 6vw, 64px);
+  }
+}
+@media (max-width: 390px) {
+  .home-welcome-grid .home-member-grid-five .home-member-art {
+    width: clamp(36px, 10vw, 47px);
+    height: clamp(36px, 10vw, 47px);
+  }
+  .home-welcome-grid .home-member-grid-five { gap: 3px; }
+}
+:root[data-text-size="extra"] .home-welcome-grid .home-member-grid-five {
+  grid-template-columns: repeat(auto-fit, minmax(min(75px,100%), 1fr));
+  row-gap: 12px;
+}

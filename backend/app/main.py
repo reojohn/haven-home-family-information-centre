@@ -17,7 +17,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, EmailStr, field_validator
-from sqlalchemy import select, delete, text
+from sqlalchemy import select, delete, update, text
 from sqlalchemy.orm import Session as DBSession
 from .db import Base, engine, get_db
 from PIL import Image, ImageOps, UnidentifiedImageError
@@ -285,9 +285,9 @@ def current_user(request: Request, db: DBSession = Depends(get_db)):
 def household_owner_id(db: DBSession, household_id: int):
     """Household creator is the first registered user; registration precedes joins.
 
-    The existing schema has no owner column and there is no account deletion flow.
-    The stable user primary key therefore identifies the founding account without
-    changing or backfilling any Supabase records.
+    The existing schema has no owner column. The stable user primary key
+    identifies the founding account without changing Supabase records.
+    Founder removal is forbidden, so ownership cannot accidentally transfer.
     """
     return db.scalar(select(User.id).where(User.household_id == household_id).order_by(User.id).limit(1))
 
@@ -464,6 +464,59 @@ def bootstrap(user: User=Depends(current_user),db: DBSession=Depends(get_db)):
         'sun_location': serialize_sun_location(sun_location.city_id if sun_location else None),
         'preferences':{'theme':pref.theme if pref else 'light','text_size':pref.text_size if pref else 'normal'}
     }
+
+class RemoveMemberIn(BaseModel):
+    owner_password: str = Field(min_length=1, max_length=128)
+
+
+@app.delete('/api/household/members/{member_id}')
+def delete_household_member(member_id: int, payload: RemoveMemberIn,
+                            user: User = Depends(current_user), db: DBSession = Depends(get_db)):
+    """Household founder may permanently remove another account in their household.
+
+    Keep shared chores, revoke all sessions, remove the account's personal data,
+    and invalidate previously shared invite codes. No other household is touched.
+    """
+    owner_id = household_owner_id(db, user.household_id)
+    if user.id != owner_id:
+        raise HTTPException(403, 'Only the household creator can remove family accounts')
+    if member_id == owner_id:
+        raise HTTPException(403, 'The household creator cannot remove their own account')
+    if not verify_password(payload.owner_password, user.password_hash):
+        raise HTTPException(403, 'Owner password is incorrect')
+    member = db.get(User, member_id)
+    if member is None or member.household_id != user.household_id:
+        raise HTTPException(404, 'Family member not found in your household')
+
+    # Tasks are household records; they must not be deleted as a side effect.
+    # Since created_by is a non-null FK, transfer creator responsibility to the
+    # owner and unassign any chores pending for the removed account.
+    created_tasks = db.execute(update(HouseholdTask).where(
+        HouseholdTask.household_id == user.household_id,
+        HouseholdTask.created_by == member_id
+    ).values(created_by=owner_id)).rowcount
+    assigned_tasks = db.execute(update(HouseholdTask).where(
+        HouseholdTask.household_id == user.household_id,
+        HouseholdTask.assigned_to == member_id
+    ).values(assigned_to=None)).rowcount
+
+    # Explicit order is needed: these tables do not use ON DELETE CASCADE.
+    for model in (Session, Preference, UserAvatar, UserProfilePhoto):
+        key = model.user_id
+        db.execute(delete(model).where(key == member_id))
+    db.delete(member)
+
+    # An excluded account may still know the old invite code. Rotate it so
+    # their previous invitation cannot be reused to create a new login.
+    household = db.get(Household, user.household_id)
+    new_code = invite()
+    while db.scalar(select(Household.id).where(Household.invite_code == new_code)):
+        new_code = invite()
+    household.invite_code = new_code
+    db.commit()
+    return {'ok': True, 'removed_member_id': member_id, 'invite_code_rotated': True,
+            'transferred_tasks': created_tasks, 'unassigned_tasks': assigned_tasks}
+
 
 @app.patch('/api/profile/name')
 def rename_my_profile(payload: AccountNameIn, user: User = Depends(current_user), db: DBSession = Depends(get_db)):

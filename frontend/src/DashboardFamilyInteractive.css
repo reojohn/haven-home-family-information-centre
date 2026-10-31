@@ -1,0 +1,184 @@
+/* Dashboard family directory: real household records, now with multi-row tiles.
+   The member profile itself is displayed by the existing FamilyMembersPanel. */
+.home-welcome-grid .home-family-card {
+  min-width: 0;
+}
+.home-welcome-grid .home-member-grid {
+  /* A wrapping flex row lets remaining members spread out when someone leaves.
+     It also centers partial rows rather than reserving an empty fifth column. */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+  align-content: center;
+  gap: 16px 6px;
+  flex: 1 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: 7px 0 9px;
+  overflow: visible;
+}
+.home-welcome-grid .home-member {
+  box-sizing: border-box;
+  min-width: 0;
+  /* Keep at most five on a desktop row, with unused space distributed
+     evenly between fewer members. */
+  width: calc((100% - 24px) / 5);
+  max-width: none;
+  flex: 0 0 calc((100% - 24px) / 5);
+  margin: 0;
+  padding: 5px 1px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 3px;
+  text-decoration: none;
+  isolation: isolate;
+}
+.home-welcome-grid .home-member-interactive {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color .22s ease, border-color .22s ease, transform .22s ease;
+}
+.home-welcome-grid .home-member .home-member-art {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: clamp(42px, 3.45vw, 61px);
+  height: clamp(42px, 3.45vw, 61px);
+  max-width: 100%;
+  margin: 0 auto 5px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  transition: transform .24s cubic-bezier(.2,.85,.2,1.2), border-color .22s ease, box-shadow .24s ease;
+  transform-origin: center;
+}
+.home-welcome-grid .home-member .profile-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.home-welcome-grid .home-member strong,
+.home-welcome-grid .home-member > span:not(.home-member-art):not(.home-member-hover-tip) {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-welcome-grid .home-member strong {
+  font-size: clamp(.64rem, .77vw, .79rem);
+  line-height: 1.35;
+}
+.home-welcome-grid .home-member > span:not(.home-member-art):not(.home-member-hover-tip) {
+  font-size: clamp(.58rem, .65vw, .7rem);
+  color: #d6ecdf;
+}
+.home-welcome-grid .home-member-hover-tip {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: calc(100% + 3px);
+  transform: translate(-50%, 5px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 6px 9px;
+  border: 1px solid rgba(214,255,226,.3);
+  border-radius: 8px;
+  background: rgba(12,49,38,.97);
+  color: #f7fff9;
+  box-shadow: 0 7px 16px rgba(4,32,22,.25);
+  font-size: .67rem;
+  font-weight: 750;
+  line-height: 1.15;
+  transition: opacity .18s ease, transform .18s ease;
+}
+@media (hover:hover) and (pointer:fine) {
+  .home-welcome-grid .home-member-interactive:hover {
+    background: rgba(214,255,225,.085);
+    border-color: rgba(214,255,225,.13);
+    z-index: 3;
+    transform: translateY(-3px);
+  }
+  .home-welcome-grid .home-member-interactive:hover .home-member-art {
+    transform: scale(1.11);
+    border-color: #d4ffde;
+    box-shadow: 0 0 0 4px rgba(189,246,205,.16), 0 8px 22px rgba(4,42,31,.32);
+  }
+  .home-welcome-grid .home-member-interactive:hover .home-member-hover-tip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+.home-welcome-grid .home-member-interactive:focus-visible {
+  outline: 2px solid #d7f9de;
+  outline-offset: 2px;
+  background: rgba(214,255,225,.105);
+  z-index: 3;
+}
+.home-welcome-grid .home-member-interactive:focus-visible .home-member-art {
+  transform: scale(1.08);
+  border-color: #e0ffe9;
+  box-shadow: 0 0 0 3px rgba(189,246,205,.18), 0 8px 20px rgba(4,42,31,.3);
+}
+.home-welcome-grid .home-member-interactive:focus-visible .home-member-hover-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.home-welcome-grid .home-member-interactive:active .home-member-art {
+  transform: scale(1.02);
+}
+/* Luxe keeps the family's premium gold-and-mint details. */
+:root[data-theme="luxe"] .home-welcome-grid .home-member-interactive:is(:hover,:focus-visible) .home-member-art {
+  border-color: #f3d6a2;
+  box-shadow: 0 0 0 4px rgba(240,201,144,.16), 0 8px 22px rgba(0,0,0,.38);
+}
+:root[data-theme="luxe"] .home-welcome-grid .home-member-hover-tip {
+  background: rgba(31,39,43,.98);
+  border-color: rgba(250,215,164,.32);
+}
+/* On narrow screens, keep at least two rows for five members; no sideways strip. */
+@media (max-width: 680px) {
+  .home-welcome-grid .home-member-grid {
+    gap: 12px 10px;
+  }
+  .home-welcome-grid .home-member {
+    width: calc((100% - 20px) / 3);
+    flex-basis: calc((100% - 20px) / 3);
+  }
+  .home-welcome-grid .home-member .home-member-art {
+    width: clamp(48px, 14vw, 64px);
+    height: clamp(48px, 14vw, 64px);
+  }
+}
+@media (max-width: 350px) {
+  .home-welcome-grid .home-member {
+    width: calc((100% - 10px) / 2);
+    flex-basis: calc((100% - 10px) / 2);
+  }
+}
+:root[data-text-size="extra"] .home-welcome-grid .home-member-grid {
+  /* Flex wrapping already supports enlarged text; names stay truncated
+     instead of pushing the neighboring profile out of alignment. */
+  row-gap: 19px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-welcome-grid .home-member-interactive,
+  .home-welcome-grid .home-member .home-member-art,
+  .home-welcome-grid .home-member-hover-tip {
+    transition: none;
+  }
+  .home-welcome-grid .home-member-interactive:is(:hover,:focus-visible),
+  .home-welcome-grid .home-member-interactive:is(:hover,:focus-visible) .home-member-art {
+    transform: none;
+  }
+}
