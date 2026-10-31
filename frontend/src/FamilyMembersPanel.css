@@ -84,3 +84,31 @@
 
 /* Unread count badge on the existing household sidebar shortcut. */
 .sidebar .household-chip .family-chip-unread{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#d3f3d9;color:#10543a;font-size:.6rem;font-weight:800;flex:none}
+
+/* Real iOS / Messenger WebView: center the close glyph independent of WebKit grid/line metrics. */
+.family-panel .family-panel-close {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  padding: 0;
+  line-height: 0;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.family-panel .family-panel-close > svg {
+  display: block;
+  position: static;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+  transform: none;
+}

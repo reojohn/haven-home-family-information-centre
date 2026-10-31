@@ -630,3 +630,45 @@
   .family-chat-presence {display:none!important}
   .family-chat-composer {min-height:51px;padding-top:5px;padding-bottom:5px}
 }
+
+/* Actual mobile WebKit / Messenger browser: center icons inside circular controls.
+   Flex centering and explicit SVG dimensions avoid grid baseline / native button offsets. */
+.family-chat .family-chat-actions-toggle,
+.family-chat .family-chat-send {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  padding: 0;
+  line-height: 0;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.family-chat .family-chat-actions-toggle > svg,
+.family-chat .family-chat-send > svg {
+  position: static;
+  display: block;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+}
+.family-chat .family-chat-actions-toggle > svg {width:17px;height:17px;}
+.family-chat .family-chat-send > svg {width:19px;height:19px;}
+/* Preserve the spinning state: this override does not cancel SVG animation. */
+@media(max-width:800px) {
+  .family-chat .family-chat-actions-toggle {
+    width: 33px;
+    height: 33px;
+    flex: 0 0 33px;
+  }
+  .family-chat .family-chat-send {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+  }
+  .family-chat { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+}

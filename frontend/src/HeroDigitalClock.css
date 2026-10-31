@@ -118,3 +118,50 @@
 @media(prefers-reduced-motion:reduce) {
   .hero-digital-clock,.hero-clock-segment {transition:none;}
 }
+
+/* Mobile Safari: use explicit grid tracks rather than flex/shrink measurements.
+   The 1px divider always sits between the main digits and date/seconds. */
+@media(max-width:800px) {
+  .hero-digital-clock {
+    display: inline-grid;
+    grid-template-columns: max-content 1px max-content;
+    align-items: center;
+    justify-content: start;
+    justify-items: stretch;
+    column-gap: 10px;
+    width: max-content;
+    max-width: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  .hero-clock-main {
+    width: max-content;
+    min-width: 0;
+    flex: none;
+    align-self: center;
+  }
+  .hero-clock-divider {
+    display: block;
+    position: static;
+    box-sizing: border-box;
+    justify-self: center;
+    align-self: center;
+    width: 1px;
+    min-width: 1px;
+    height: 53px;
+    padding: 0;
+    margin: 0;
+  }
+  .hero-clock-details {
+    width: 46px;
+    min-width: 46px;
+    flex: none;
+    justify-self: center;
+    align-self: center;
+  }
+}
+@media(max-width:390px) {
+  .hero-digital-clock {column-gap: 9px;}
+  .hero-clock-details {width: 42px;min-width: 42px;}
+  .hero-clock-divider {height: 48px;}
+}
