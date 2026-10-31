@@ -402,3 +402,231 @@
   cursor:progress;
   box-shadow:0 5px 18px rgba(13,90,60,.18);
 }
+
+/* ======================================================================
+   Compact, mobile-first Family Chat drawer
+   This only applies to the chat tab on small screens. The Members tab,
+   desktop layouts, chat logic, and all existing theme colors are retained.
+   ====================================================================== */
+@media (max-width:800px) {
+  .family-panel.family-panel-chat-active {
+    inset:0;
+    width:100%;
+    max-width:100%;
+    height:100vh;
+    height:100dvh;
+    min-height:0;
+    border:0;
+    overflow:hidden;
+  }
+  .family-panel.family-panel-chat-active .family-panel-header {
+    min-height:70px;
+    padding:12px 14px 10px;
+    gap:10px;
+  }
+  .family-panel.family-panel-chat-active .family-panel-heading-icon {
+    width:38px;
+    height:38px;
+    flex-basis:38px;
+    border-radius:12px;
+  }
+  .family-panel.family-panel-chat-active .family-panel-eyebrow {
+    font-size:.56rem;
+    letter-spacing:.12em;
+  }
+  .family-panel.family-panel-chat-active .family-panel-heading-text h2 {
+    margin:2px 0 1px;
+    font-size:1rem;
+    line-height:1.25;
+  }
+  .family-panel.family-panel-chat-active .family-panel-heading-text p {font-size:.69rem}
+  .family-panel.family-panel-chat-active .family-panel-close {
+    width:38px;
+    height:38px;
+    flex-basis:38px;
+    border-radius:12px;
+  }
+  .family-panel.family-panel-chat-active .family-panel-tabs {
+    gap:6px;
+    padding:6px 11px;
+    flex:none;
+  }
+  .family-panel.family-panel-chat-active .family-panel-tabs button {
+    min-height:38px;
+    padding:7px 6px;
+    gap:6px;
+    font-size:.76rem;
+    border-radius:10px;
+  }
+  .family-panel.family-panel-chat-active .family-panel-scroll {
+    min-width:0;
+    min-height:0;
+    flex:1 1 0%;
+    overflow:hidden;
+  }
+  .family-panel.family-panel-chat-active .family-chat {
+    width:100%;
+    min-width:0;
+    min-height:0;
+    flex:1 1 auto;
+    overflow:hidden;
+  }
+  .family-panel.family-panel-chat-active .family-chat-heading {
+    flex:none;
+    min-height:64px;
+    padding:9px 13px;
+    gap:9px;
+  }
+  .family-chat-group-icon {
+    width:37px;
+    height:37px;
+    border-radius:12px;
+  }
+  .family-chat-group-icon svg {width:19px;height:19px}
+  .family-chat-heading>div {gap:2px}
+  .family-chat-heading strong {gap:5px;font-size:.82rem;line-height:1.28}
+  .family-chat-heading small {gap:4px;font-size:.63rem;line-height:1.34}
+  .family-chat-heading small svg {width:11px;height:11px;flex:none}
+  .family-chat-connection {width:30px;height:30px;border-radius:9px;flex:none}
+  .family-chat-messages {
+    min-height:0;
+    min-width:0;
+    flex:1 1 0%;
+    padding:11px 12px 16px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    scroll-padding-bottom:12px;
+  }
+  .family-chat-day {margin:8px auto 15px;padding:5px 11px;font-size:.63rem}
+  .family-chat-line {max-width:100%;gap:6px;margin:11px 0}
+  .family-chat-avatar {width:27px;height:27px;flex-basis:27px}
+  .family-chat-message-block {max-width:calc(100% - 33px);min-width:0}
+  .family-chat-message-block:has(.family-chat-action-menu) {min-width:min(245px,calc(100% - 33px))}
+  .family-chat-line.mine .family-chat-message-block {max-width:89%}
+  .family-chat-line.mine .family-chat-message-block:has(.family-chat-action-menu) {min-width:min(245px,89%)}
+  .family-chat-author {
+    max-width:100%;
+    margin:0 0 3px 5px;
+    font-size:.62rem;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  .family-chat-message-content {max-width:100%;min-width:0;gap:5px}
+  .family-chat-bubble {
+    min-width:0;
+    max-width:100%;
+    padding:9px 11px;
+    border-radius:15px 15px 15px 5px;
+    font-size:.8rem;
+    line-height:1.42;
+    overflow-wrap:anywhere;
+  }
+  .family-chat-line.mine .family-chat-bubble {border-radius:15px 15px 5px 15px}
+  .family-chat-actions-toggle {
+    width:33px;
+    height:33px;
+    min-width:33px;
+    opacity:.85;
+    border-radius:50%;
+  }
+  .family-chat-meta {min-height:17px;padding:3px 4px 1px;font-size:.6rem;gap:4px}
+  .family-chat-seen {font-size:.6rem;margin:2px 4px 0}
+  .family-chat-reaction-pills {padding:2px 0;gap:3px}
+  .family-chat-reaction-pills button {
+    min-height:25px;
+    padding:2px 7px;
+    font-size:.67rem;
+  }
+  .family-chat-quote {margin-bottom:6px;padding:4px 6px}
+  .family-chat-quote strong {font-size:.62rem}
+  .family-chat-quote span {max-width:min(55vw,190px);font-size:.65rem}
+  .family-chat-action-menu {
+    width:min(100%,290px);
+    max-width:100%;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:3px;
+    margin:5px 0 4px;
+    padding:6px;
+    border-radius:13px;
+  }
+  .family-chat-reaction-options {
+    gap:2px;
+    padding:2px 1px 6px;
+    margin:0;
+    justify-content:space-between;
+  }
+  .family-chat-reaction-options button {
+    flex:1 1 0;
+    min-width:0;
+    min-height:36px;
+    font-size:1.09rem;
+    padding:4px 1px;
+    border-radius:9px;
+  }
+  .family-chat-action-menu>button {
+    min-height:35px;
+    padding:6px 3px;
+    gap:4px;
+    font-size:.67rem;
+  }
+  .family-chat-action-menu>button svg {width:14px;height:14px;flex:none}
+  .family-chat-compose-context {flex:none;padding:7px 12px;gap:8px}
+  .family-chat-compose-context span {font-size:.66rem}
+  .family-chat-typing,.family-chat-error {flex:none;padding:5px 12px;font-size:.68rem;line-height:1.3}
+  .family-chat-composer {
+    flex:none;
+    min-height:59px;
+    padding:8px 11px max(8px, env(safe-area-inset-bottom, 0px));
+    gap:8px;
+    align-items:center;
+  }
+  .family-chat-compose-field {
+    min-height:42px;
+    padding:3px 11px;
+    border-radius:16px;
+  }
+  /* 16px prevents iOS Safari auto-zoom while the keyboard opens. */
+  .family-chat .family-chat-compose-field textarea,
+  .family-chat .family-chat-compose-field textarea:focus,
+  .family-chat .family-chat-compose-field textarea:focus-visible {
+    min-height:34px;
+    height:34px;
+    max-height:100px;
+    padding:7px 0;
+    font-size:16px;
+    line-height:20px;
+  }
+  .family-chat-send {width:42px;height:42px;flex-basis:42px}
+  /* The input itself names the field: no instructional footer is needed on phones. */
+  .family-chat-caption {display:none}
+  .family-chat-modal-backdrop {padding:12px max(12px,env(safe-area-inset-left,0px))}
+  .family-chat-modal {width:min(100%,390px);padding:21px 18px;border-radius:19px}
+  .family-chat-modal-actions button {min-height:42px}
+}
+@media(max-width:380px) {
+  .family-panel.family-panel-chat-active .family-panel-header {min-height:64px;padding:9px 11px}
+  .family-panel.family-panel-chat-active .family-panel-tabs {padding:5px 8px}
+  .family-panel.family-panel-chat-active .family-panel-tabs button {min-height:36px;font-size:.72rem}
+  .family-panel.family-panel-chat-active .family-chat-heading {min-height:59px;padding:7px 10px}
+  .family-chat-messages {padding:9px 9px 12px}
+  .family-chat-bubble {padding:8px 10px;font-size:.78rem}
+  .family-chat-message-block {max-width:calc(100% - 32px)}
+  .family-chat-line.mine .family-chat-message-block {max-width:91%}
+  .family-chat-action-menu {width:min(100%,274px)}
+  .family-chat-action-menu>button {font-size:.64rem}
+  .family-chat-composer {padding-inline:9px;gap:7px}
+}
+@media(max-width:800px) and (max-height:550px) {
+  .family-panel.family-panel-chat-active .family-panel-header {min-height:55px;padding:6px 12px}
+  .family-panel.family-panel-chat-active .family-panel-heading-icon {width:32px;height:32px;flex-basis:32px}
+  .family-panel.family-panel-chat-active .family-panel-heading-text p {display:none}
+  .family-panel.family-panel-chat-active .family-panel-tabs {padding:4px 10px}
+  .family-panel.family-panel-chat-active .family-panel-tabs button {min-height:32px}
+  .family-panel.family-panel-chat-active .family-chat-heading {min-height:51px;padding:6px 11px}
+  .family-chat-group-icon {width:32px;height:32px}
+  .family-chat-presence {display:none!important}
+  .family-chat-composer {min-height:51px;padding-top:5px;padding-bottom:5px}
+}
