@@ -21,7 +21,7 @@ from sqlalchemy import select, delete, update, text
 from sqlalchemy.orm import Session as DBSession
 from .db import Base, engine, get_db
 from PIL import Image, ImageOps, UnidentifiedImageError
-from .models import Household, User, UserAvatar, UserProfilePhoto, Session, Reminder, Announcement, Contact, Energy, Bill, HouseholdDevice, HouseholdTask, HouseholdSunLocation, Preference, utc_now
+from .models import Household, User, UserAvatar, UserProfilePhoto, Session, Reminder, Announcement, Contact, Energy, Bill, HouseholdDevice, HouseholdTask, HouseholdSunLocation, Preference, FamilyChatMessage, FamilyChatRead, FamilyChatReaction, FamilyChatPresence, FamilyChatChange, utc_now
 
 COOKIE = 'hic_session'
 SESSION_DAYS = 7
@@ -33,16 +33,31 @@ Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    if engine.dialect.name == 'sqlite':
+        # Add the non-destructive fields to existing local chat databases.
+        with engine.begin() as connection:
+            existing = {row[1] for row in connection.exec_driver_sql('PRAGMA table_info(family_chat_messages)')}
+            for column, sql_type in (('reply_to_id', 'INTEGER'), ('edited_at', 'DATETIME'), ('deleted_at', 'DATETIME')):
+                if column not in existing:
+                    connection.exec_driver_sql(f'ALTER TABLE family_chat_messages ADD COLUMN {column} {sql_type}')
     # Supabase uses PostgreSQL. Secure the newly created private image table
     # against direct PostgREST access; users read photos through FastAPI only.
     if engine.dialect.name == 'postgresql':
         with engine.begin() as connection:
             connection.execute(text('ALTER TABLE public.user_profile_photos ENABLE ROW LEVEL SECURITY'))
             connection.execute(text('ALTER TABLE public.household_tasks ENABLE ROW LEVEL SECURITY'))
+            connection.execute(text('ALTER TABLE public.family_chat_messages ENABLE ROW LEVEL SECURITY'))
+            connection.execute(text('ALTER TABLE public.family_chat_reads ENABLE ROW LEVEL SECURITY'))
+            for chat_table in ('family_chat_reactions', 'family_chat_changes', 'family_chat_presence'):
+                connection.execute(text(f'ALTER TABLE public.{chat_table} ENABLE ROW LEVEL SECURITY'))
             for role in ('anon', 'authenticated'):
                 if connection.scalar(text('SELECT 1 FROM pg_roles WHERE rolname = :role'), {'role': role}):
                     connection.execute(text(f'REVOKE ALL PRIVILEGES ON TABLE public.user_profile_photos FROM {role}'))
                     connection.execute(text(f'REVOKE ALL PRIVILEGES ON TABLE public.household_tasks FROM {role}'))
+                    connection.execute(text(f'REVOKE ALL PRIVILEGES ON TABLE public.family_chat_messages FROM {role}'))
+                    connection.execute(text(f'REVOKE ALL PRIVILEGES ON TABLE public.family_chat_reads FROM {role}'))
+                    for chat_table in ('family_chat_reactions', 'family_chat_changes', 'family_chat_presence'):
+                        connection.execute(text(f'REVOKE ALL PRIVILEGES ON TABLE public.{chat_table} FROM {role}'))
     yield
 
 app = FastAPI(title='Home Information Centre API', version='1.0.0', lifespan=lifespan)
@@ -282,6 +297,9 @@ def current_user(request: Request, db: DBSession = Depends(get_db)):
     if not user: raise HTTPException(401, 'Account not found')
     return user
 
+from .chat import create_chat_router
+app.include_router(create_chat_router(current_user))
+
 def household_owner_id(db: DBSession, household_id: int):
     """Household creator is the first registered user; registration precedes joins.
 
@@ -499,6 +517,15 @@ def delete_household_member(member_id: int, payload: RemoveMemberIn,
         HouseholdTask.household_id == user.household_id,
         HouseholdTask.assigned_to == member_id
     ).values(assigned_to=None)).rowcount
+
+    # Preserve messages under their recorded sender name and drop personal references.
+    db.execute(update(FamilyChatMessage).where(
+        FamilyChatMessage.sender_user_id == member_id,
+        FamilyChatMessage.household_id == user.household_id
+    ).values(sender_user_id=None))
+    db.execute(delete(FamilyChatRead).where(FamilyChatRead.user_id == member_id))
+    db.execute(delete(FamilyChatReaction).where(FamilyChatReaction.user_id == member_id, FamilyChatReaction.household_id == user.household_id))
+    db.execute(delete(FamilyChatPresence).where(FamilyChatPresence.user_id == member_id))
 
     # Explicit order is needed: these tables do not use ON DELETE CASCADE.
     for model in (Session, Preference, UserAvatar, UserProfilePhoto):

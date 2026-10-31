@@ -1,18 +1,20 @@
 import {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {Link} from 'react-router-dom';
-import {ArrowLeft, ChevronRight, Crown, House, ShieldCheck, Trash2, UserPlus, Users, X} from 'lucide-react';
+import {ArrowLeft, ChevronRight, Crown, House, MessageCircle, ShieldCheck, Trash2, UserPlus, Users, X} from 'lucide-react';
+import FamilyChat from './FamilyChat.jsx';
 import './FamilyMembersPanel.css';
 
 /**
  * Household directory backed by /api/bootstrap. Only the founding account may
  * remove another household account; the backend independently enforces it.
  */
-export default function FamilyMembersPanel({household, members, user, renderAvatar, initialSelectedMemberId=null, onRemoveMember, onClose, onNavigate}){
+export default function FamilyMembersPanel({household, members, user, renderAvatar, initialSelectedMemberId=null, onRemoveMember, onClose, onNavigate, unreadCount=0, onUnreadChange}){
   const panelRef = useRef(null);
   const closeRef = useRef(null);
   const backRef = useRef(null);
   const [selectedId, setSelectedId] = useState(initialSelectedMemberId);
+  const [activeTab, setActiveTab] = useState('members');
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [ownerPassword, setOwnerPassword] = useState('');
   const [removingId, setRemovingId] = useState(null);
@@ -31,7 +33,7 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
         event.stopPropagation();
         onClose();
       } else if(event.key === 'Tab'){
-        const focusables = [...(panelRef.current?.querySelectorAll('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])') || [])]
+        const focusables = [...(panelRef.current?.querySelectorAll('button:not([disabled]), a[href], textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])') || [])]
           .filter(element => element.getClientRects().length > 0);
         if(!focusables.length)return;
         const first = focusables[0], last = focusables[focusables.length - 1];
@@ -72,7 +74,7 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
 
   return createPortal(<div className="family-panel-root">
     <div className="family-panel-backdrop" aria-hidden="true" onMouseDown={event=>{if(event.target===event.currentTarget)onClose();}}/>
-    <aside id="family-members-drawer" className="family-panel" ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="family-panel-title" aria-describedby="family-panel-description" tabIndex={-1}>
+    <aside id="family-members-drawer" className={`family-panel ${activeTab==='chat'?'family-panel-chat-active':''}`} ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="family-panel-title" aria-describedby="family-panel-description" tabIndex={-1}>
       <div className="family-panel-header">
         <div className="family-panel-heading-icon"><House size={21} aria-hidden="true"/></div>
         <div className="family-panel-heading-text">
@@ -83,8 +85,12 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
         <button ref={closeRef} type="button" className="family-panel-close" onClick={onClose} aria-label="Close family members panel" title="Close panel"><X size={20}/></button>
       </div>
 
+      <div className="family-panel-tabs" role="tablist" aria-label="Family directory and chat">
+        <button type="button" role="tab" aria-selected={activeTab==='members'} onClick={()=>setActiveTab('members')}><Users size={16}/> Members</button>
+        <button type="button" role="tab" aria-selected={activeTab==='chat'} onClick={()=>setActiveTab('chat')}><MessageCircle size={16}/> Family Chat {unreadCount>0&&<span className="family-panel-tab-unread">{unreadCount>99?'99+':unreadCount}</span>}</button>
+      </div>
       <div className="family-panel-scroll">
-        {selected ? <div className="family-panel-profile" key={selected.id}>
+        {activeTab==='chat' ? <FamilyChat user={user} members={list} renderAvatar={renderAvatar} onUnreadChange={onUnreadChange}/> : selected ? <div className="family-panel-profile" key={selected.id}>
           <button ref={backRef} type="button" className="family-panel-back" onClick={()=>{setSelectedId(null);setConfirmRemove(false);setOwnerPassword('')}} disabled={removingId!==null}><ArrowLeft size={17}/> Back to all members</button>
           <div className="family-panel-profile-card">
             <div className="family-panel-profile-avatar">{renderAvatar(selected,list.indexOf(selected))}</div>
@@ -126,7 +132,7 @@ export default function FamilyMembersPanel({household, members, user, renderAvat
           </div>
         </>}
       </div>
-      <div className="family-panel-footer"><ShieldCheck size={15}/><span>Only members of this household can view this directory.</span></div>
+      {activeTab==='members'&&<div className="family-panel-footer"><ShieldCheck size={15}/><span>Only members of this household can view this directory.</span></div>}
     </aside>
   </div>,document.body);
 }

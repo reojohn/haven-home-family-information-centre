@@ -81,3 +81,6 @@
 .family-panel-remove-password { display:grid; gap:6px; margin:0 0 13px; color:var(--fp-ink); font-size:.73rem; font-weight:750; }
 .family-panel-remove-password input { width:100%; min-width:0; border:1px solid var(--fp-line); border-radius:9px; padding:10px 12px; background:var(--fp-bg); color:var(--fp-ink); font:inherit; }
 .family-panel-remove-password input:focus-visible { outline:2px solid var(--green-strong,#1b664b); outline-offset:2px; }
+
+/* Unread count badge on the existing household sidebar shortcut. */
+.sidebar .household-chip .family-chip-unread{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#d3f3d9;color:#10543a;font-size:.6rem;font-weight:800;flex:none}

@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import String, DateTime, Integer, Float, ForeignKey, Boolean, Text, UniqueConstraint, LargeBinary
+from sqlalchemy import String, DateTime, Integer, Float, ForeignKey, Boolean, Text, UniqueConstraint, LargeBinary, Index
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base
 
@@ -134,3 +134,59 @@ class HouseholdSunLocation(Base):
     __tablename__ = 'household_sun_locations'
     household_id: Mapped[int] = mapped_column(ForeignKey('households.id'), primary_key=True)
     city_id: Mapped[str] = mapped_column(String(40))
+
+
+class FamilyChatMessage(Base):
+    """Persistent household-only group conversation. Keep messages after member removal."""
+    __tablename__ = 'family_chat_messages'
+    __table_args__ = (
+        Index('ix_family_chat_household_cursor', 'household_id', 'id'),
+        UniqueConstraint('household_id', 'sender_user_id', 'client_nonce', name='uq_family_chat_client_nonce'),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    household_id: Mapped[int] = mapped_column(ForeignKey('households.id'), nullable=False)
+    sender_user_id: Mapped[int | None] = mapped_column(ForeignKey('users.id'), nullable=True)
+    sender_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    body: Mapped[str] = mapped_column(String(2000), nullable=False)
+    client_nonce: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+    reply_to_id: Mapped[int | None] = mapped_column(ForeignKey('family_chat_messages.id'), nullable=True)
+    edited_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
+class FamilyChatReaction(Base):
+    __tablename__ = 'family_chat_reactions'
+    __table_args__ = (UniqueConstraint('message_id', 'user_id', name='uq_family_chat_reaction_user'),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    household_id: Mapped[int] = mapped_column(ForeignKey('households.id'), index=True)
+    message_id: Mapped[int] = mapped_column(ForeignKey('family_chat_messages.id'), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    emoji: Mapped[str] = mapped_column(String(10))
+
+
+class FamilyChatChange(Base):
+    """Message updates feed for multi-worker live and HTTP transports."""
+    __tablename__ = 'family_chat_changes'
+    __table_args__ = (Index('ix_family_chat_changes_household_cursor', 'household_id', 'id'),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    household_id: Mapped[int] = mapped_column(ForeignKey('households.id'), index=True)
+    message_id: Mapped[int] = mapped_column(ForeignKey('family_chat_messages.id'))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+
+
+class FamilyChatPresence(Base):
+    """Ephemeral heartbeat persisted for deployments with multiple workers."""
+    __tablename__ = 'family_chat_presence'
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), primary_key=True)
+    household_id: Mapped[int] = mapped_column(ForeignKey('households.id'), index=True)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+
+
+class FamilyChatRead(Base):
+    """The last message each family member has actually viewed."""
+    __tablename__ = 'family_chat_reads'
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), primary_key=True)
+    household_id: Mapped[int] = mapped_column(ForeignKey('households.id'), index=True)
+    last_read_id: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
