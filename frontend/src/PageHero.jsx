@@ -20,6 +20,7 @@ export default function PageHero({
   const Icon = ICONS[variant] || Sparkles;
   return (
     <section className={`haven-page-hero haven-page-hero--${variant}`} aria-label={`${title} introduction`}>
+      <div className="haven-page-hero__ambient" aria-hidden="true"><Icon strokeWidth={0.8}/></div>
       <div className="haven-page-hero__content">
         <div className="haven-page-hero__eyebrow"><Icon size={15} strokeWidth={2} aria-hidden="true"/>{eyebrow}</div>
         <h1>{title}</h1>

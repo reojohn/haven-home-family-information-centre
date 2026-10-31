@@ -1,0 +1,232 @@
+/* Header calendar: responsive date picker. Palette follows Light, Dark, Haven Luxe. */
+.topbar-calendar {position:relative;display:flex;align-items:center;flex-shrink:0;}
+.topbar-calendar .haven-nav-date-trigger {
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:9px 13px;min-height:37px;white-space:nowrap;cursor:pointer;
+  font:inherit;font-size:.78rem;font-weight:650;line-height:1.2;
+  background:var(--surface-alt);color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;transition:background .2s,border-color .2s,box-shadow .2s;
+}
+.topbar-calendar .haven-nav-date-trigger:hover,
+.topbar-calendar .haven-nav-date-trigger[aria-expanded="true"] {
+  border-color:color-mix(in srgb,var(--green) 48%,var(--line));
+  background:var(--green-pale);color:var(--green);
+}
+.topbar-calendar .haven-nav-date-trigger:focus-visible {
+  outline:3px solid var(--green);outline-offset:3px;
+}
+.haven-nav-calendar {
+  /* Dark mode reference palette. Other themes replace these tokens below. */
+  --navcal-bg-top:#212028;
+  --navcal-bg-mid:#17171b;
+  --navcal-bg-bottom:#1d1d20;
+  --navcal-glow:rgba(119,57,240,.19);
+  --navcal-accent:#8545ff;
+  --navcal-accent-glow:rgba(123,64,248,.62);
+  --navcal-selected-top:#9860ff;
+  --navcal-selected-bottom:#6c30ef;
+  --navcal-selected-border:rgba(184,148,255,.42);
+  --navcal-selected-shadow:rgba(99,48,226,.41);
+  --navcal-arrow-hover:rgba(132,76,249,.18);
+  --navcal-arrow-hover-border:rgba(155,115,254,.55);
+  --navcal-today-outline:rgba(174,152,255,.5);
+  --navcal-today-bg:rgba(129,77,246,.14);
+  --navcal-today-bg-hover:rgba(129,77,246,.25);
+  --navcal-today-border:rgba(180,156,250,.35);
+  --navcal-today-text:#d7c9ff;
+  --navcal-footer-link:#eae5fa;
+  --navcal-footer-link-hover:#bea3ff;
+  --navcal-focus:#ccb4ff;
+  --navcal-muted:#85838e;
+  --navcal-outside:#676570;
+  --navcal-panel-border:rgba(255,255,255,.11);
+  --navcal-panel-text:#faf9ff;
+  position:absolute;top:calc(100% + 14px);right:0;
+  z-index:200;width:412px;max-width:calc(100vw - 28px);max-height:calc(100dvh - 100px);
+  padding:24px 22px 20px;overflow-y:auto;overflow-x:hidden;
+  background:radial-gradient(ellipse at 48% -8%,var(--navcal-glow),transparent 55%),
+             linear-gradient(155deg,var(--navcal-bg-top) 0%,var(--navcal-bg-mid) 48%,var(--navcal-bg-bottom) 100%);
+  border:1px solid var(--navcal-panel-border);border-radius:27px;
+  box-shadow:0 32px 65px rgba(5,10,15,.31),0 8px 18px rgba(10,12,19,.19),
+             inset 0 1px 0 rgba(255,255,255,.06);
+  color:var(--navcal-panel-text);transition:background .25s,border-color .25s; font-family:'Plus Jakarta Sans','DM Sans',system-ui,sans-serif;
+  animation:haven-nav-calendar-appear .2s ease-out;
+}
+.haven-nav-calendar-accent {
+  position:absolute;top:0;left:50%;width:35%;height:4px;transform:translateX(-50%);
+  border-radius:0 0 12px 12px;background:var(--navcal-accent);box-shadow:0 0 23px var(--navcal-accent-glow);
+  pointer-events:none;
+}
+.haven-nav-calendar-head {
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  margin:5px 0 28px;
+}
+.haven-nav-calendar-head h2 {
+  flex:1;min-width:0;margin:0;text-align:center;letter-spacing:-.045em;
+  color:var(--navcal-panel-text);font-size:clamp(1.2rem,2.1vw,1.55rem);font-weight:650;
+}
+.haven-nav-calendar-arrow {
+  width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.13);border-radius:50%;
+  background:rgba(15,15,20,.22);color:#f5f4fb;cursor:pointer;
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.haven-nav-calendar-arrow:hover {background:var(--navcal-arrow-hover);border-color:var(--navcal-arrow-hover-border);transform:translateY(-1px)}
+.haven-nav-calendar-weekdays,
+.haven-nav-calendar-grid {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px 3px;}
+.haven-nav-calendar-weekdays {margin-bottom:15px;gap:3px;}
+.haven-nav-calendar-weekdays span {
+  font-size:.64rem;color:var(--navcal-muted);font-weight:800;letter-spacing:.045em;
+  text-align:center;user-select:none;
+}
+.haven-nav-calendar-day {
+  position:relative;display:flex;align-items:center;justify-content:center;
+  width:100%;aspect-ratio:1;min-width:0;padding:0;border:1px solid transparent;border-radius:50%;
+  background:transparent;color:var(--navcal-panel-text);font:inherit;font-weight:550;font-size:1rem;
+  text-align:center;cursor:pointer;transition:background .16s,color .16s,transform .16s,box-shadow .16s;
+}
+.haven-nav-calendar-day.outside-month {color:var(--navcal-outside);}
+.haven-nav-calendar-day:hover:not(.selected) {
+  background:rgba(255,255,255,.105);color:#fff;transform:scale(1.04);
+}
+.haven-nav-calendar-day.is-today:not(.selected) {
+  border-color:var(--navcal-today-outline);color:#fff;
+}
+.haven-nav-calendar-day.selected {
+  background:linear-gradient(145deg,var(--navcal-selected-top),var(--navcal-selected-bottom));
+  color:#fff;font-weight:800;border-color:var(--navcal-selected-border);
+  box-shadow:0 7px 22px var(--navcal-selected-shadow),inset 0 1px 0 rgba(255,255,255,.22);
+}
+.haven-nav-calendar :is(button,a):focus-visible {
+  outline:2px solid var(--navcal-focus);outline-offset:2px;
+}
+.haven-nav-calendar-footer {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-top:19px;padding:15px 2px 0;border-top:1px solid rgba(255,255,255,.11);
+}
+.haven-nav-calendar-today {
+  padding:7px 13px;border-radius:9px;border:1px solid var(--navcal-today-border);
+  background:var(--navcal-today-bg);color:var(--navcal-today-text);font-size:.76rem;font-weight:750;cursor:pointer;
+}
+.haven-nav-calendar-today:hover {background:var(--navcal-today-bg-hover);}
+.haven-nav-calendar-link {
+  display:inline-flex;align-items:center;gap:5px;text-decoration:none;
+  font-size:.76rem;font-weight:700;color:var(--navcal-footer-link);
+}
+.haven-nav-calendar-link:hover {color:var(--navcal-footer-link-hover);}
+@keyframes haven-nav-calendar-appear {
+  from {opacity:0;transform:translateY(-7px) scale(.98)}
+  to {opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* Theme palettes: classic Light -> forest green; Dark -> original purple; Luxe -> warm brown. */
+:root[data-theme="light"] .haven-nav-calendar {
+  --navcal-bg-top:#184d3d;
+  --navcal-bg-mid:#0f342a;
+  --navcal-bg-bottom:#123b2e;
+  --navcal-glow:rgba(81,214,147,.19);
+  --navcal-accent:#88e4ac;
+  --navcal-accent-glow:rgba(100,218,154,.45);
+  --navcal-selected-top:#278257;
+  --navcal-selected-bottom:#145b3d;
+  --navcal-selected-border:rgba(157,238,187,.56);
+  --navcal-selected-shadow:rgba(17,107,67,.38);
+  --navcal-arrow-hover:rgba(125,223,156,.17);
+  --navcal-arrow-hover-border:rgba(151,233,175,.5);
+  --navcal-today-outline:rgba(140,231,175,.64);
+  --navcal-today-bg:rgba(109,220,153,.18);
+  --navcal-today-bg-hover:rgba(109,220,153,.29);
+  --navcal-today-border:rgba(154,234,177,.44);
+  --navcal-today-text:#ccf7da;
+  --navcal-footer-link:#e3f5e9;
+  --navcal-footer-link-hover:#96eab7;
+  --navcal-focus:#a5f1c6;
+  --navcal-muted:#b0c6bb;
+  --navcal-outside:#7ca092;
+  --navcal-panel-border:rgba(210,248,223,.2);
+  --navcal-panel-text:#f7fff9;
+}
+:root[data-theme="fluid"] .haven-nav-calendar {
+  --navcal-bg-top:color-mix(in srgb,#184d3d var(--theme-light, 100%),#212028);
+  --navcal-bg-mid:color-mix(in srgb,#0f342a var(--theme-light, 100%),#17171b);
+  --navcal-bg-bottom:color-mix(in srgb,#123b2e var(--theme-light, 100%),#1d1d20);
+  --navcal-glow:color-mix(in srgb,rgba(81,214,147,.19) var(--theme-light, 100%),rgba(119,57,240,.19));
+  --navcal-accent:color-mix(in srgb,#88e4ac var(--theme-light, 100%),#8545ff);
+  --navcal-accent-glow:color-mix(in srgb,rgba(100,218,154,.45) var(--theme-light, 100%),rgba(123,64,248,.62));
+  --navcal-selected-top:color-mix(in srgb,#278257 var(--theme-light, 100%),#9860ff);
+  --navcal-selected-bottom:color-mix(in srgb,#145b3d var(--theme-light, 100%),#6c30ef);
+  --navcal-selected-border:color-mix(in srgb,rgba(157,238,187,.56) var(--theme-light, 100%),rgba(184,148,255,.42));
+  --navcal-selected-shadow:color-mix(in srgb,rgba(17,107,67,.38) var(--theme-light, 100%),rgba(99,48,226,.41));
+  --navcal-arrow-hover:color-mix(in srgb,rgba(125,223,156,.17) var(--theme-light, 100%),rgba(132,76,249,.18));
+  --navcal-arrow-hover-border:color-mix(in srgb,rgba(151,233,175,.5) var(--theme-light, 100%),rgba(155,115,254,.55));
+  --navcal-today-outline:color-mix(in srgb,rgba(140,231,175,.64) var(--theme-light, 100%),rgba(174,152,255,.5));
+  --navcal-today-bg:color-mix(in srgb,rgba(109,220,153,.18) var(--theme-light, 100%),rgba(129,77,246,.14));
+  --navcal-today-bg-hover:color-mix(in srgb,rgba(109,220,153,.29) var(--theme-light, 100%),rgba(129,77,246,.25));
+  --navcal-today-border:color-mix(in srgb,rgba(154,234,177,.44) var(--theme-light, 100%),rgba(180,156,250,.35));
+  --navcal-today-text:color-mix(in srgb,#ccf7da var(--theme-light, 100%),#d7c9ff);
+  --navcal-footer-link:color-mix(in srgb,#e3f5e9 var(--theme-light, 100%),#eae5fa);
+  --navcal-footer-link-hover:color-mix(in srgb,#96eab7 var(--theme-light, 100%),#bea3ff);
+  --navcal-focus:color-mix(in srgb,#a5f1c6 var(--theme-light, 100%),#ccb4ff);
+  --navcal-muted:color-mix(in srgb,#b0c6bb var(--theme-light, 100%),#85838e);
+  --navcal-outside:color-mix(in srgb,#7ca092 var(--theme-light, 100%),#676570);
+  --navcal-panel-border:color-mix(in srgb,rgba(210,248,223,.2) var(--theme-light, 100%),rgba(255,255,255,.11));
+  --navcal-panel-text:color-mix(in srgb,#f7fff9 var(--theme-light, 100%),#faf9ff);
+}
+:root[data-theme="luxe"] .haven-nav-calendar {
+  --navcal-bg-top:#423129;
+  --navcal-bg-mid:#2a221d;
+  --navcal-bg-bottom:#30221d;
+  --navcal-glow:rgba(205,147,83,.19);
+  --navcal-accent:#d4a16d;
+  --navcal-accent-glow:rgba(214,153,91,.48);
+  --navcal-selected-top:#a3653c;
+  --navcal-selected-bottom:#743b24;
+  --navcal-selected-border:rgba(243,197,146,.48);
+  --navcal-selected-shadow:rgba(116,63,30,.47);
+  --navcal-arrow-hover:rgba(221,159,103,.18);
+  --navcal-arrow-hover-border:rgba(230,182,134,.48);
+  --navcal-today-outline:rgba(236,190,140,.55);
+  --navcal-today-bg:rgba(215,158,99,.16);
+  --navcal-today-bg-hover:rgba(215,158,99,.28);
+  --navcal-today-border:rgba(235,189,144,.36);
+  --navcal-today-text:#f6d8b7;
+  --navcal-footer-link:#f4e7d7;
+  --navcal-footer-link-hover:#f0c28f;
+  --navcal-focus:#f5d3a7;
+  --navcal-muted:#b8a49b;
+  --navcal-outside:#877268;
+  --navcal-panel-border:rgba(246,211,178,.2);
+  --navcal-panel-text:#fff8f0;
+}
+/* Trigger follows the accent for the open dropdown without altering normal navbar styling. */
+:root[data-theme="fluid"] .topbar-calendar .haven-nav-date-trigger[aria-expanded="true"] {
+  border-color:color-mix(in srgb,#2e9a67 var(--theme-light, 100%),#9b78ec);
+  color:color-mix(in srgb,#1b7652 var(--theme-light, 100%),#9b78ec);
+}
+:root[data-theme="luxe"] .topbar-calendar .haven-nav-date-trigger[aria-expanded="true"] {
+  border-color:rgba(221,176,124,.5);
+  background:rgba(213,166,110,.15);
+  color:#f3d5ac;
+}
+
+@media(max-width:640px) {
+  /* The original navbar hides the date at phone sizes; keep a compact calendar trigger instead. */
+  .topbar-calendar .haven-nav-date-trigger {display:inline-flex;min-width:38px;min-height:38px;padding:8px 10px;}
+  .haven-nav-date-label {display:none;}
+  .haven-nav-calendar {
+    position:fixed;top:76px;right:12px;left:12px;width:auto;max-width:none;
+    max-height:calc(100dvh - 88px);padding:20px 17px 16px;border-radius:23px;
+  }
+  .haven-nav-calendar-head {margin-bottom:23px;}
+  .haven-nav-calendar-arrow {width:38px;height:38px;flex-basis:38px;}
+  .haven-nav-calendar-day {font-size:.94rem;}
+}
+@media(max-width:360px) {
+  .haven-nav-calendar {left:7px;right:7px;padding:17px 12px 13px;}
+  .haven-nav-calendar-weekdays span {font-size:.57rem;}
+  .haven-nav-calendar-weekdays,.haven-nav-calendar-grid {gap:5px 2px;}
+  .haven-nav-calendar-head h2 {font-size:1.1rem;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .haven-nav-calendar,.haven-nav-calendar-arrow,.haven-nav-calendar-day {animation:none;transition:none;}
+}

@@ -1,0 +1,245 @@
+/* Haven Home 2026 – unified editorial hero treatment.
+   Presentation only: original metrics, actions, state and API calls are untouched.
+   This stylesheet is imported last to protect the latest family / sun / clock updates. */
+
+/* Shared hero cards: Calendar / Household / Expenses / Settings */
+.haven-page-hero {
+  --hero-accent: #f5d6a7;
+  --hero-glow: rgba(231,187,123,.21);
+  position: relative;
+  min-height: 306px;
+  grid-template-columns: minmax(0,1.13fr) minmax(290px,.87fr);
+  gap: clamp(22px, 3.7vw, 64px);
+  padding: clamp(26px, 3.5vw, 48px);
+  margin-bottom: 26px;
+  border-radius: 28px;
+  border: 1px solid rgba(236,255,239,.23);
+  background:
+    radial-gradient(ellipse 58% 95% at 101% 10%, var(--hero-glow),transparent 81%),
+    radial-gradient(ellipse 60% 80% at 5% 130%,rgba(157,228,184,.12),transparent 85%),
+    linear-gradient(115deg,#0c302b 0%,#155140 51%,#2b795c 100%);
+  box-shadow: 0 25px 54px rgba(15,61,43,.16), inset 0 1px 0 rgba(255,255,255,.18);
+}
+.haven-page-hero::before {
+  right: -95px;top: -175px;width: 450px;height: 450px;
+  border-color: rgba(255,247,219,.11);
+  box-shadow: 0 0 0 49px rgba(240,250,241,.025),0 0 0 108px rgba(246,252,244,.016);
+}
+.haven-page-hero::after {left: -80px;bottom: -150px;width: 380px;height: 280px;opacity:.8;}
+.haven-page-hero--household {
+  --hero-accent: #b9efd1;
+  --hero-glow: rgba(101,207,170,.19);
+  background:radial-gradient(ellipse 58% 95% at 104% 10%,var(--hero-glow),transparent 80%),linear-gradient(117deg,#10352e,#18584d 51%,#2a796a);
+}
+.haven-page-hero--expenses {
+  --hero-accent: #ffd5a1;
+  --hero-glow: rgba(229,168,95,.20);
+  background:radial-gradient(ellipse 70% 110% at 110% 0%,var(--hero-glow),transparent 83%),linear-gradient(117deg,#142f2c,#245149 55%,#4c7256);
+}
+.haven-page-hero--settings {
+  --hero-accent: #e8d0fa;
+  --hero-glow: rgba(206,166,232,.18);
+  background:radial-gradient(ellipse 68% 120% at 108% -10%,var(--hero-glow),transparent 82%),linear-gradient(116deg,#152f32,#244d4a 55%,#39665e);
+}
+/* Soft watermark artwork is decorative, not an extra fetch or large image. */
+.haven-page-hero__ambient {
+  position:absolute;z-index:0;right:-42px;top:-65px;
+  width:300px;height:300px;display:grid;place-items:center;
+  opacity:.085;pointer-events:none;transform:rotate(-13deg);
+  color:#fff6df;
+}
+.haven-page-hero__ambient svg {width:100%;height:100%;}
+.haven-page-hero__content {z-index:1;align-self:stretch;justify-content:center;}
+.haven-page-hero__eyebrow {
+  gap:10px;max-width:100%;width:fit-content;
+  padding:8px 11px;border-radius:999px;
+  border:1px solid rgba(244,255,246,.20);
+  background:rgba(239,255,244,.085);
+  color:#e0f8e8;font-size:.62rem;letter-spacing:.15em;
+  box-shadow:inset 0 1px rgba(255,255,255,.09);
+}
+.haven-page-hero h1 {
+  position:relative;font-size:clamp(2rem,2.9vw,3.25rem);
+  line-height:1.1;letter-spacing:-.063em;
+  margin:17px 0 18px;max-width:20ch;
+  text-wrap:balance;
+}
+.haven-page-hero h1::after {
+  content:"";position:absolute;bottom:-10px;left:1px;
+  width:53px;height:3px;border-radius:12px;
+  background:linear-gradient(90deg,var(--hero-accent),rgba(255,255,255,.14));
+}
+.haven-page-hero__content>p {
+  max-width:46ch;color:#e3f3e9;
+  font-size:clamp(.83rem,.95vw,.98rem);line-height:1.73;
+}
+.haven-page-hero__bottom {margin-top:23px;gap:13px 17px;}
+.haven-page-hero__actions .btn {
+  min-height:45px;display:inline-flex;align-items:center;justify-content:center;
+  padding:11px 20px;border-radius:12px;
+  background:#f4d5ac;color:#214335;
+  border:1px solid rgba(255,247,226,.58);
+  box-shadow:0 9px 22px rgba(6,30,21,.18),inset 0 1px 0 rgba(255,255,255,.37);
+  transition:transform .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.haven-page-hero__actions .btn:hover:not(:disabled) {
+  transform:translateY(-2px);background:#ffe6c3;
+  box-shadow:0 13px 25px rgba(6,30,21,.22);
+}
+.haven-page-hero__actions .btn:focus-visible {outline:3px solid #fff3ce;outline-offset:3px;}
+.haven-page-hero__footnote {color:#ddf1e5;font-size:.71rem;}
+.haven-page-hero__preview {
+  z-index:1;align-self:stretch;
+  display:flex;flex-direction:column;justify-content:center;
+  border-radius:22px;padding:20px 21px;
+  border:1px solid rgba(242,255,244,.28);
+  background:
+    linear-gradient(142deg,rgba(255,255,255,.19),rgba(255,255,255,.065) 62%,rgba(255,255,255,.11));
+  box-shadow:0 14px 31px rgba(4,34,26,.12),inset 0 1px 0 rgba(255,255,255,.25);
+  backdrop-filter:blur(10px) saturate(125%);
+  -webkit-backdrop-filter:blur(10px) saturate(125%);
+}
+.haven-page-hero__preview-heading {font-size:.61rem;letter-spacing:.17em;color:#f1fff3;}
+.haven-page-hero__signal {background:var(--hero-accent);box-shadow:0 0 0 4px rgba(255,255,255,.12);}
+.haven-page-hero__preview-body {
+  grid-template-columns:minmax(90px,.9fr) minmax(110px,1.1fr);gap:11px;margin-top:16px;
+}
+.haven-page-hero__emblem {
+  position:relative;min-height:154px;border-radius:17px;gap:5px;
+  background:radial-gradient(circle at 50% 14%,rgba(246,255,249,.16),transparent 72%),rgba(4,27,25,.28);
+  border:1px solid rgba(247,255,245,.17);
+  overflow:hidden;
+}
+.haven-page-hero__emblem::before {
+  content:"";position:absolute;width:98px;height:98px;border-radius:50%;
+  border:1px solid rgba(255,250,225,.15);top:-31px;right:-30px;pointer-events:none;
+}
+.haven-page-hero__emblem>svg {color:var(--hero-accent);filter:drop-shadow(0 3px 10px rgba(255,231,177,.17));}
+.haven-page-hero__emblem strong {font-size:clamp(1.35rem,1.95vw,2.12rem);}
+.haven-page-hero__emblem small {letter-spacing:.085em;line-height:1.35;}
+.haven-page-hero__metrics {gap:10px;}
+.haven-page-hero__metric {
+  border-radius:14px;padding:12px 14px;
+  background:rgba(244,255,246,.105);
+  border:1px solid rgba(247,255,250,.19);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+}
+.haven-page-hero__metric strong {font-size:clamp(.9rem,1.17vw,1.17rem);line-height:1.3;}
+.haven-page-hero__preview-note {color:#ddf2e4;margin-top:14px;padding-top:12px;}
+/* Theme-specific materials. Luxe uses translucent glass to show the living room. */
+:root[data-theme="dark"] .haven-page-hero {
+  background:radial-gradient(ellipse 62% 116% at 103% 5%,rgba(80,135,111,.26),transparent 81%),linear-gradient(114deg,#101b1c,#1b3430 60%,#28473b);
+  border-color:rgba(237,255,240,.18);
+}
+:root[data-theme="dark"] .haven-page-hero--expenses {
+  background:radial-gradient(ellipse 70% 116% at 105% 0%,rgba(224,166,101,.15),transparent 82%),linear-gradient(115deg,#151b1c,#263e37);
+}
+:root[data-theme="dark"] .haven-page-hero--settings {
+  background:radial-gradient(ellipse 70% 116% at 105% 0%,rgba(189,155,216,.17),transparent 82%),linear-gradient(115deg,#171b22,#293c39);
+}
+:root[data-theme="luxe"] .haven-page-hero {
+  background:linear-gradient(115deg,rgba(17,26,30,.82),rgba(26,40,42,.68) 58%,rgba(46,59,55,.68));
+  border-color:rgba(246,220,180,.41);
+  box-shadow:0 22px 50px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.15);
+  backdrop-filter:blur(16px) saturate(125%);
+  -webkit-backdrop-filter:blur(16px) saturate(125%);
+}
+:root[data-theme="luxe"] .haven-page-hero__eyebrow {color:#ffe5c7;border-color:rgba(255,224,189,.31);background:rgba(250,221,188,.09);}
+:root[data-theme="luxe"] .haven-page-hero__preview {background:linear-gradient(130deg,rgba(255,255,255,.14),rgba(26,36,39,.38));border-color:rgba(248,228,206,.33);}
+:root[data-theme="luxe"] .haven-page-hero__emblem {background:rgba(5,16,21,.33);}
+:root[data-theme="luxe"] .haven-page-hero__actions .btn {background:#f2cd9f;color:#27352c;}
+/* Dashboard: preserve the 3-section hero; refine only its surface and heading. */
+.dashboard-page-header {align-items:end;gap:18px;margin-bottom:23px;}
+.dashboard-page-header .eyebrow {letter-spacing:.16em;font-size:.66rem;}
+.dashboard-page-header h1 {font-size:clamp(1.9rem,2.65vw,2.8rem);letter-spacing:-.062em;line-height:1.13;}
+.dashboard-page-header p {font-size:.9rem;line-height:1.55;}
+.dashboard-page-header .btn {min-height:43px;border-radius:12px;box-shadow:0 8px 20px rgba(14,65,45,.15);}
+.home-welcome-grid {
+  border:1px solid rgba(241,255,241,.22);
+  background:
+    radial-gradient(ellipse 47% 110% at 103% -10%,rgba(164,237,189,.19),transparent 80%),
+    linear-gradient(114deg,#103b30 0%,#15513f 48%,#2c8261 100%);
+  box-shadow:0 23px 48px rgba(15,61,42,.16),inset 0 1px 0 rgba(255,255,255,.15);
+}
+.home-welcome-grid .home-greeting-card h2 {text-wrap:balance;}
+.home-welcome-grid .sun-ref-card {
+  border-color:rgba(242,255,246,.32);
+  background:linear-gradient(142deg,rgba(238,255,241,.16),rgba(194,248,214,.06));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 12px 25px rgba(5,45,32,.08);
+}
+:root[data-theme="dark"] .home-welcome-grid {
+  background:radial-gradient(ellipse 55% 125% at 102% 0%,rgba(133,190,153,.13),transparent 78%),linear-gradient(114deg,#0d2b29,#164638 59%,#235d49);
+}
+:root[data-theme="luxe"] .home-welcome-grid {
+  background:linear-gradient(116deg,rgba(12,25,29,.81),rgba(18,44,39,.73) 62%,rgba(35,67,57,.70));
+  border-color:rgba(250,225,193,.33);
+  backdrop-filter:blur(13px) saturate(125%);
+  -webkit-backdrop-filter:blur(13px) saturate(125%);
+}
+/* Tasks & Chores: its separate progress hero shares the same material system. */
+.chores-page .page-header {align-items:end;}
+.chores-page .page-header h1 {letter-spacing:-.055em;}
+.chores-intro {
+  position:relative;isolation:isolate;overflow:hidden;
+  padding:clamp(24px,3vw,36px);gap:clamp(16px,3vw,35px);
+  border-radius:25px;border-color:rgba(247,255,247,.25);
+  background:radial-gradient(ellipse 50% 130% at 102% 10%,rgba(171,242,188,.23),transparent 76%),linear-gradient(113deg,#12392f,#1b5945 60%,#2c8063);
+  box-shadow:0 20px 46px rgba(14,54,36,.15),inset 0 1px 0 rgba(255,255,255,.13);
+}
+.chores-intro::before {
+  content:"";position:absolute;z-index:-1;right:-90px;top:-145px;width:360px;height:360px;
+  border:1px solid rgba(247,255,247,.12);border-radius:50%;
+  box-shadow:0 0 0 43px rgba(240,255,242,.025),0 0 0 90px rgba(240,255,242,.015);
+}
+.chores-intro-copy {justify-content:center;}
+.chores-intro h2 {font-size:clamp(1.7rem,2.2vw,2.45rem);max-width:18ch;line-height:1.15;text-wrap:balance;}
+.chores-intro p {max-width:45ch;line-height:1.7;}
+.chores-kicker {width:fit-content;border-radius:999px;border:1px solid rgba(250,255,248,.22);background:rgba(255,255,255,.09);padding:8px 11px;}
+.chores-intro-note {margin-top:12px;color:#dbf6e6;}
+.chores-progress-card {
+  position:relative;width:305px;padding:23px;border-radius:21px;
+  background:linear-gradient(140deg,rgba(255,255,255,.20),rgba(255,255,255,.075));
+  border-color:rgba(245,255,247,.32);
+  box-shadow:0 12px 27px rgba(7,39,27,.15),inset 0 1px 0 rgba(255,255,255,.23);
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+}
+.chores-progress-track {height:11px;background:rgba(255,255,255,.18);box-shadow:inset 0 2px 4px rgba(0,0,0,.12);}
+.chores-progress-track>span {background:linear-gradient(90deg,#79cfaa,#c5efc8 75%,#ffe1aa);box-shadow:0 0 11px rgba(166,233,188,.35);}
+:root[data-theme="dark"] .chores-intro {background:radial-gradient(ellipse at 102% 0%,rgba(110,173,136,.20),transparent 78%),linear-gradient(110deg,#132525,#234336);}
+:root[data-theme="luxe"] .chores-intro {background:linear-gradient(112deg,rgba(16,25,31,.78),rgba(25,49,41,.70));border-color:rgba(245,215,172,.34);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);}
+/* Responsive hero treatment, without altering any existing navigation or data. */
+@media(max-width:1100px) {
+  .haven-page-hero {gap:19px;grid-template-columns:minmax(0,1fr) minmax(245px,.85fr);padding:25px;}
+  .haven-page-hero__preview {padding:17px;}
+}
+@media(max-width:800px) {
+  .haven-page-hero {grid-template-columns:minmax(0,1fr) minmax(205px,.84fr);gap:14px;padding:22px;min-height:0;}
+  .haven-page-hero__emblem {min-height:118px;}
+  .haven-page-hero h1 {font-size:clamp(1.75rem,4.5vw,2.3rem);}
+}
+@media(max-width:640px) {
+  .haven-page-hero {display:flex;flex-direction:column;align-items:stretch;gap:16px;padding:21px 17px;border-radius:21px;min-height:0;}
+  .haven-page-hero__ambient {width:210px;height:210px;right:-60px;top:-40px;}
+  .haven-page-hero h1 {font-size:clamp(1.65rem,6vw,2.05rem);margin:13px 0 17px;}
+  .haven-page-hero__eyebrow {font-size:.57rem;padding:7px 9px;letter-spacing:.1em;}
+  .haven-page-hero__content>p {font-size:.8rem;line-height:1.58;}
+  .haven-page-hero__bottom {margin-top:16px;}
+  .haven-page-hero__actions {width:100%;}
+  .haven-page-hero__actions .btn {width:100%;min-height:43px;}
+  .haven-page-hero__preview {border-radius:16px;padding:12px;}
+  .haven-page-hero__preview-body {grid-template-columns:minmax(85px,.8fr) minmax(0,1.2fr);gap:8px;margin-top:10px;}
+  .haven-page-hero__emblem {min-height:98px;padding:9px 6px;}
+  .haven-page-hero__emblem strong {font-size:1.15rem;}
+  .haven-page-hero__metric {padding:8px 10px;border-radius:10px;}
+  .haven-page-hero__metric strong {font-size:.84rem;}
+  .dashboard-page-header {align-items:stretch;}
+  .dashboard-page-header h1 {font-size:clamp(1.65rem,6vw,2.1rem);}
+  .chores-intro {padding:21px 17px;border-radius:21px;}
+  .chores-intro h2 {font-size:clamp(1.65rem,5.4vw,2rem);}
+  .chores-progress-card {width:100%;min-width:0;padding:17px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .haven-page-hero__actions .btn {transition:none;}
+  .haven-page-hero__actions .btn:hover:not(:disabled) {transform:none;}
+  .chores-progress-track>span {transition:none;}
+}

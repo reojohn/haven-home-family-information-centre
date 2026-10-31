@@ -3122,3 +3122,533 @@ h1,h2,h3 { text-wrap: balance; }
   grid-template-columns: repeat(auto-fit, minmax(min(75px,100%), 1fr));
   row-gap: 12px;
 }
+
+/* ========================================================================
+   PREMIUM SIDEBAR REFINEMENT — October 31 2026
+   Visual upgrade only: brand, household chip, navigation, helper card,
+   and signed-in profile footer.
+   ======================================================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background:
+    radial-gradient(circle 360px at -8% -4%, rgba(138,206,162,.22), transparent 55%),
+    radial-gradient(circle 260px at 92% 8%, rgba(84,166,123,.12), transparent 45%),
+    linear-gradient(180deg, #154435 0%, #10372d 38%, #0c2b23 100%);
+  border-right: 1px solid rgba(226, 250, 229, .11);
+  box-shadow: 18px 0 42px rgba(5, 27, 18, .14);
+}
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07), transparent 16%),
+    linear-gradient(90deg, rgba(255,255,255,.035), transparent 20%);
+  opacity: .95;
+}
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  right: 10px;
+  width: 1px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(231,250,234,.12), transparent);
+}
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+.brand {
+  position: relative;
+  padding: 2px 10px 0;
+  margin: 2px 0 28px;
+  align-items: center;
+}
+.brand::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -15px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216,241,221,.12), transparent);
+}
+.brand-mark.haven-logo-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 14px 28px rgba(0,0,0,.16), inset 0 1px rgba(255,255,255,.18);
+}
+.brand-mark.haven-logo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,.12);
+  pointer-events: none;
+}
+.brand strong {
+  color: #f6fffa;
+  font-size: 1.72rem;
+  letter-spacing: -.075em;
+}
+.brand small {
+  color: #b7d5c4;
+  font-size: .55rem;
+  letter-spacing: .16em;
+}
+.household-chip {
+  position: relative;
+  margin: 0 4px 30px;
+  padding: 14px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(230, 247, 232, .14);
+  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+  box-shadow: 0 10px 24px rgba(0,0,0,.12), inset 0 1px rgba(255,255,255,.08);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+.household-chip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.04), transparent 44%);
+}
+.household-chip:hover,
+.household-chip:focus-visible,
+.sidebar .household-chip.family-chip-trigger[aria-expanded="true"] {
+  transform: translateY(-1px);
+  border-color: rgba(211,245,220,.28);
+  box-shadow: 0 14px 28px rgba(0,0,0,.16), inset 0 1px rgba(255,255,255,.11);
+}
+.house-avatar.family-avatar {
+  height: 43px;
+  flex-basis: 43px;
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(231,246,236,.19), rgba(150,198,168,.17));
+  box-shadow: inset 0 1px rgba(255,255,255,.12), 0 10px 22px rgba(0,0,0,.12);
+}
+.household-chip strong {
+  font-size: .83rem;
+  font-weight: 760;
+  letter-spacing: -.015em;
+}
+.household-chip span { color: #d1e4d9; }
+.nav-label {
+  margin: 0 16px 12px;
+  color: #a8cab7;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .24em;
+}
+.nav-label-bottom { margin-top: 28px; }
+.side-nav { gap: 7px; }
+.nav-link {
+  position: relative;
+  min-height: 49px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: #c8ddd2;
+  font-weight: 650;
+  letter-spacing: -.01em;
+  border: 1px solid transparent;
+  overflow: hidden;
+  transition: transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.nav-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.05), transparent 55%);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  transform: translateX(4px);
+  background: linear-gradient(135deg, rgba(220,244,226,.10), rgba(255,255,255,.04));
+  border-color: rgba(217,243,223,.12);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.10);
+}
+.nav-link:hover::before,
+.nav-link:focus-visible::before {
+  opacity: 1;
+}
+.nav-link svg {
+  color: #cfe0d6;
+  transition: color .18s ease, transform .18s ease;
+}
+.nav-link:hover svg,
+.nav-link:focus-visible svg { color: #eefaf0; transform: scale(1.03); }
+.nav-link.active {
+  background: linear-gradient(135deg, rgba(110,180,132,.36), rgba(77,143,106,.24));
+  border-color: rgba(218,245,224,.18);
+  box-shadow: 0 10px 22px rgba(0,0,0,.14), inset 3px 0 0 #c8f0ca;
+}
+.nav-link.active::before { opacity: 1; }
+.nav-link .nav-dot {
+  width: 8px;
+  height: 8px;
+  background: #daf8d8;
+  box-shadow: 0 0 0 5px rgba(219,248,216,.08), 0 0 14px rgba(219,248,216,.22);
+}
+.sidebar-bottom {
+  padding-top: 24px;
+  margin-top: auto;
+}
+.side-help {
+  position: relative;
+  overflow: hidden;
+  margin: 0 4px 16px;
+  padding: 19px 17px 18px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(87,156,114,.30), rgba(39,92,70,.22));
+  border: 1px solid rgba(219,246,223,.14);
+  box-shadow: 0 12px 26px rgba(0,0,0,.12), inset 0 1px rgba(255,255,255,.08);
+}
+.side-help::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 100% 0, rgba(255,255,255,.11), transparent 34%);
+}
+.side-help strong {
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: .92rem;
+  letter-spacing: -.02em;
+}
+.side-help span {
+  color: #daeadf;
+  line-height: 1.62;
+}
+.side-profile {
+  position: relative;
+  min-height: 78px;
+  margin: 0 2px;
+  padding: 14px 10px 8px;
+  gap: 12px;
+  border-top: 1px solid rgba(221,245,226,.12);
+}
+.side-profile::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 18px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+}
+.side-profile .avatar {
+  flex: 0 0 40px;
+  height: 40px;
+  border: 2px solid rgba(220,248,226,.18);
+  box-shadow: 0 8px 16px rgba(0,0,0,.12);
+}
+.side-profile strong {
+  color: #f5fbf7;
+  font-size: .86rem;
+  font-weight: 760;
+}
+.side-profile small {
+  color: #c8dad0;
+  font-size: .72rem;
+}
+.side-profile .icon-button {
+  flex: 0 0 34px;
+  height: 34px;
+  width: 34px;
+  border-radius: 11px;
+  color: #c8ddd2;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(223,245,227,.10);
+}
+.side-profile .icon-button:hover {
+  background: rgba(255,255,255,.10);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+:root[data-theme="luxe"] .sidebar {
+  background:
+    radial-gradient(circle 360px at 0 0, rgba(239,195,134,.14), transparent 48%),
+    linear-gradient(180deg, rgba(20,26,34,.95), rgba(12,17,25,.94));
+  border-right: 1px solid rgba(247,232,209,.17);
+  box-shadow: 18px 0 40px rgba(0,0,0,.26);
+}
+:root[data-theme="luxe"] .brand strong span { color: #f3c38d; }
+:root[data-theme="luxe"] .brand small,
+:root[data-theme="luxe"] .nav-label,
+:root[data-theme="luxe"] .side-profile small,
+:root[data-theme="luxe"] .household-chip span { color: #d9d7cf; }
+:root[data-theme="luxe"] .household-chip,
+:root[data-theme="luxe"] .side-help,
+:root[data-theme="luxe"] .side-profile .icon-button {
+  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  border-color: rgba(255,248,230,.18);
+}
+:root[data-theme="luxe"] .nav-link:hover,
+:root[data-theme="luxe"] .nav-link:focus-visible {
+  background: linear-gradient(135deg, rgba(255,246,231,.15), rgba(255,255,255,.06));
+  border-color: rgba(250,236,208,.18);
+}
+:root[data-theme="luxe"] .nav-link.active {
+  background: linear-gradient(135deg, rgba(255,244,217,.20), rgba(222,186,138,.11));
+  border-color: rgba(246,226,190,.24);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18), inset 3px 0 0 #f0c38c;
+}
+:root[data-theme="luxe"] .nav-link .nav-dot {
+  background: #f6d1a2;
+  box-shadow: 0 0 0 5px rgba(246,209,162,.10), 0 0 14px rgba(246,209,162,.26);
+}
+:root[data-theme="luxe"] .side-help span,
+:root[data-theme="luxe"] .nav-link,
+:root[data-theme="luxe"] .side-profile .icon-button,
+:root[data-theme="luxe"] .household-chip strong,
+:root[data-theme="luxe"] .side-profile strong { color: #faf7ef; }
+
+@media (max-width: 760px) {
+  .sidebar {
+    padding-top: 24px;
+    width: min(310px, 88vw);
+  }
+  .brand { margin-bottom: 24px; }
+  .brand::after { bottom: -12px; }
+  .household-chip { margin-bottom: 24px; }
+  .nav-label-bottom { margin-top: 22px; }
+  .side-help { margin-bottom: 14px; }
+}
+
+/* Sidebar details: use the transparent Haven emblem with NO decorative frame.
+   The illustration below is deliberately scoped to .side-help; never to .sidebar. */
+.sidebar .brand-mark.haven-logo-frame {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible;
+  isolation: auto;
+}
+.sidebar .brand-mark.haven-logo-frame::before,
+.sidebar .brand-mark.haven-logo-frame::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.sidebar .brand-mark.haven-logo-frame .haven-brand-emblem {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  object-fit: contain;
+}
+
+/* The family artwork is limited to the small “A little more organized.”
+   card. Its relative positioning prevents the pseudo-element from spilling
+   across the whole sidebar. Keep all labels above the decorative image. */
+.sidebar .side-help {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(140deg,#326f55,#245441 80%);
+  border: 1px solid rgba(229,247,231,.18);
+  box-shadow: 0 12px 24px rgba(0,0,0,.12), inset 0 1px rgba(255,255,255,.09);
+}
+.sidebar .side-help::before {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(160deg,rgba(20,73,52,.15),rgba(10,57,43,.54)),
+    url('/illustrations/family-centre-loading-background.png');
+  background-size: cover;
+  background-position: center 42%;
+  background-repeat: no-repeat;
+  opacity: .22;
+  transform: none;
+}
+.sidebar .side-help::after {
+  z-index: 0;
+}
+.sidebar .side-help > * {
+  position: relative;
+  z-index: 1;
+}
+.sidebar .side-help strong,
+.sidebar .side-help span {
+  color: #f4fff6;
+  text-shadow: 0 1px 4px rgba(5,39,27,.33);
+}
+.sidebar .side-help span {color: #dfefe3;}
+
+:root[data-theme="luxe"] .sidebar .side-help {
+  background: linear-gradient(140deg,rgba(48,57,58,.93),rgba(31,41,48,.92));
+  border-color: rgba(244,220,189,.24);
+}
+:root[data-theme="luxe"] .sidebar .side-help::before {
+  background-image:
+    linear-gradient(155deg,rgba(28,37,42,.25),rgba(28,38,43,.67)),
+    url('/illustrations/family-centre-loading-background.png');
+  opacity: .20;
+}
+@media (max-width: 760px) {
+  .sidebar .side-help::before { background-position: center 42%; opacity: .20; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .sidebar .side-help { background: #28533f; }
+  :root[data-theme="luxe"] .sidebar .side-help { background: #303a3d; }
+}
+
+/* Preserve the premium depth with the app's actual fluid Light/Dark theme.
+   The earlier fluid selector is more specific than the generic .sidebar rule. */
+:root[data-theme="fluid"] .sidebar {
+  background:
+    radial-gradient(circle 350px at -8% -4%, color-mix(in srgb,rgba(130,203,154,.22) var(--theme-light),rgba(151,157,164,.10)), transparent 57%),
+    linear-gradient(180deg,
+      color-mix(in srgb,#154435 var(--theme-light),#242930) 0%,
+      color-mix(in srgb,#10372d var(--theme-light),#171c22) 43%,
+      color-mix(in srgb,#0c2b23 var(--theme-light),#11151a) 100%);
+}
+:root[data-theme="fluid"] .sidebar .nav-link.active {
+  background: linear-gradient(135deg,
+    color-mix(in srgb,rgba(110,180,132,.36) var(--theme-light),rgba(204,220,216,.17)),
+    color-mix(in srgb,rgba(77,143,106,.24) var(--theme-light),rgba(132,150,151,.10)));
+  border-color: rgba(218,245,224,.18);
+  box-shadow:0 10px 22px rgba(0,0,0,.14), inset 3px 0 0 #c8f0ca;
+}
+:root[data-theme="fluid"] .sidebar .side-help {
+  background: linear-gradient(140deg,
+    color-mix(in srgb,#326f55 var(--theme-light),#343b42),
+    color-mix(in srgb,#245441 var(--theme-light),#222c33) 80%);
+  border-color: rgba(229,247,231,.18);
+}
+
+
+/* Premium help-card artwork: recognizable family scene, protected typography.
+   This is restricted to the small help card, never the sidebar itself. */
+.sidebar .side-help {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 168px;
+  padding: 16px 15px 15px;
+  overflow: hidden;
+  background: #173d2f;
+  border: 1px solid rgba(229,247,231,.22);
+  box-shadow: 0 13px 28px rgba(0,0,0,.19), inset 0 1px rgba(255,255,255,.12);
+}
+.sidebar .side-help::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 0;
+  border-radius: inherit;
+  background: url('/illustrations/family-centre-loading-background.png') center 26% / cover no-repeat;
+  opacity: .94;
+  filter: saturate(1.15) contrast(1.08);
+  transform: none;
+  pointer-events: none;
+}
+.sidebar .side-help::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(180deg,
+    rgba(6,38,29,.13) 0%,
+    rgba(7,39,30,.19) 29%,
+    rgba(7,43,32,.69) 49%,
+    rgba(8,42,31,.94) 69%,
+    rgba(7,37,28,.97) 100%);
+  pointer-events: none;
+}
+.sidebar .side-help > * {position:relative; z-index:2; }
+.sidebar .side-help > svg {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  color: #f1ffe9;
+  filter: drop-shadow(0 1px 4px rgba(0,38,24,.7));
+}
+.sidebar .side-help strong {
+  margin: 0 0 5px;
+  color: #fffefa;
+  font-size: .87rem;
+  line-height: 1.33;
+  font-weight: 800;
+  text-shadow: 0 1px 6px rgba(0,26,18,.84);
+}
+.sidebar .side-help span {
+  color: #f0f9f2;
+  font-size: .72rem;
+  line-height: 1.46;
+  text-shadow: 0 1px 5px rgba(0,26,18,.85);
+}
+:root[data-theme="luxe"] .sidebar .side-help {
+  background: #202931;
+  border-color: rgba(251,225,186,.28);
+}
+:root[data-theme="luxe"] .sidebar .side-help::before {
+  background: url('/illustrations/family-centre-loading-background.png') center 26% / cover no-repeat;
+  opacity: .92;
+  filter: saturate(1.04) contrast(1.08);
+}
+:root[data-theme="luxe"] .sidebar .side-help::after {
+  background: linear-gradient(180deg,
+    rgba(14,23,30,.16) 0%, rgba(15,25,32,.22) 29%,
+    rgba(15,26,32,.72) 49%, rgba(13,22,29,.95) 70%,
+    rgba(10,19,26,.97) 100%);
+}
+@media (max-width: 760px) {
+  .sidebar .side-help {min-height: 168px;}
+  .sidebar .side-help::before {background-position: center 26%; opacity:.94;}
+}
+@media (prefers-reduced-transparency: reduce) {
+  .sidebar .side-help::after {
+    background: linear-gradient(180deg,rgba(8,40,30,.20),rgba(7,37,28,.96) 64%);
+  }
+}
+
+
+/* Premium sidebar: scrollbar-free appearance, scrolling remains accessible.
+   Applied last to override old theme and mobile scrollbar decorations. */
+.sidebar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-gutter: auto;
+  overscroll-behavior-y: contain;
+}
+.sidebar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.sidebar::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-track {
+  display: none;
+}
