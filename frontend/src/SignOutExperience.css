@@ -1,0 +1,158 @@
+/* Haven Home — shared, responsive sign-out progress experience. */
+.topbar-signout {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease,
+    box-shadow .24s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.topbar-signout::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  background: linear-gradient(115deg, transparent, rgba(86,189,135,.13), transparent);
+  transform: translateX(-110%);
+  transition: opacity .25s ease, transform .4s ease;
+  pointer-events: none;
+}
+.topbar-signout:hover:not(:disabled) {
+  box-shadow: 0 7px 18px rgba(12,73,49,.12);
+  transform: translateY(-2px);
+}
+.topbar-signout:hover:not(:disabled)::before { opacity: 1; transform: translateX(110%); }
+.topbar-signout svg { flex: 0 0 auto; transition: transform .23s ease; }
+.topbar-signout:hover:not(:disabled) svg { transform: translateX(2px); }
+.topbar-signout:active:not(:disabled) { transform: translateY(1px) scale(.965); box-shadow: 0 2px 6px rgba(12,73,49,.10); }
+.topbar-signout:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+.topbar-signout:disabled { cursor: wait; }
+
+.haven-signout-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+           max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  background: rgba(9, 30, 24, .62);
+  -webkit-backdrop-filter: blur(10px) saturate(.88);
+  backdrop-filter: blur(10px) saturate(.88);
+  animation: havenSignoutFade .24s ease-out both;
+}
+.haven-signout-dialog {
+  position: relative;
+  width: min(100%, 390px);
+  padding: clamp(27px, 6vw, 40px) 30px 28px;
+  text-align: center;
+  border-radius: 25px;
+  background: #fcfffc;
+  color: #19372d;
+  border: 1px solid rgba(204,231,214,.8);
+  box-shadow: 0 32px 90px rgba(4,28,19,.32), 0 4px 18px rgba(4,28,19,.12);
+  outline: none;
+  overflow: hidden;
+  animation: havenSignoutEnter .34s cubic-bezier(.2,1,.25,1) both;
+}
+.haven-signout-dialog::before {
+  content: '';
+  position: absolute;
+  top: -115px; left: 50%; width: 300px; height: 230px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(103,202,151,.24), transparent 70%);
+  pointer-events: none;
+}
+.haven-signout-icon {
+  position: relative;
+  width: 82px; height: 82px;
+  display: grid; place-items: center;
+  margin: 0 auto 23px;
+  border-radius: 25px;
+  color: #f6fff8;
+  background: linear-gradient(145deg, #2d9b6f, #13543d);
+  box-shadow: 0 12px 24px rgba(28,115,77,.2), inset 0 1px rgba(255,255,255,.28);
+}
+.haven-signout-icon > svg { animation: havenSignoutIconPulse 1.8s ease-in-out infinite; }
+.haven-signout-icon-arc {
+  position: absolute;
+  inset: -7px;
+  border: 2px solid rgba(39,152,105,.13);
+  border-top-color: #45b47f;
+  border-right-color: #45b47f;
+  border-radius: 29px;
+  animation: havenSignoutSpin 1.1s linear infinite;
+}
+.haven-signout-eyebrow {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 10px; font-weight: 850; letter-spacing: .15em; color: #277958;
+}
+.haven-signout-dialog h2 { position: relative; margin: 12px 0 8px; font-size: clamp(23px, 5vw, 29px); font-weight: 800; letter-spacing: -.045em; line-height: 1.2; color: #163c2e; }
+.haven-signout-dots { display: inline-block; animation: havenSignoutDots 1.4s ease-in-out infinite; }
+.haven-signout-dialog p { margin: 0; font-size: 13px; line-height: 1.7; color: #63796e; }
+.haven-signout-loading {
+  width: min(240px,100%); height: 5px; margin: 25px auto 21px;
+  border-radius: 99px; overflow: hidden; background: #e6f3eb;
+}
+.haven-signout-loading span {
+  display: block; height: 100%; width: 40%; border-radius: inherit;
+  background: linear-gradient(90deg,#68c995,#1c855b);
+  animation: havenSignoutBar 1.25s ease-in-out infinite;
+}
+.haven-signout-footnote {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 11px; font-weight: 650; color: #5b846d;
+}
+@keyframes havenSignoutFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes havenSignoutEnter { from { opacity: 0; transform: translateY(17px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes havenSignoutSpin { to { transform: rotate(360deg); } }
+@keyframes havenSignoutIconPulse { 50% { transform: translateX(2px); } }
+@keyframes havenSignoutDots { 50% { opacity: .35; } }
+@keyframes havenSignoutBar { from { transform: translateX(-110%); } to { transform: translateX(280%); } }
+
+/* Fluid light/dark slider: the panel follows the active theme while staying readable. */
+:root[data-theme="fluid"] .haven-signout-dialog {
+  background: color-mix(in srgb, #fcfffc var(--theme-light), #192723 var(--theme-dark));
+  border-color: color-mix(in srgb, #cce7d6 var(--theme-light), #536f60 var(--theme-dark));
+}
+:root[data-theme="fluid"] .haven-signout-dialog h2 { color: var(--fluid-ink); }
+:root[data-theme="fluid"] .haven-signout-dialog p { color: var(--fluid-muted); }
+:root[data-theme="fluid"] .haven-signout-eyebrow,
+:root[data-theme="fluid"] .haven-signout-footnote { color: var(--fluid-accent); }
+:root[data-theme="fluid"] .haven-signout-loading {
+  background: color-mix(in srgb, #e6f3eb var(--theme-light), #3b4d42 var(--theme-dark));
+}
+
+/* The account-page action shares the same tactile response. */
+.settings-logout .btn { transition: transform .2s ease, box-shadow .2s ease; }
+.settings-logout .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 20px rgba(16,95,61,.12); }
+.settings-logout .btn:active:not(:disabled) { transform: translateY(1px) scale(.97); }
+
+/* Keep the status dialog legible in every theme, including the glassy Luxe backdrop. */
+:root[data-theme="luxe"] .haven-signout-backdrop { background: rgba(8,16,17,.76); }
+:root[data-theme="luxe"] .haven-signout-dialog {
+  background: linear-gradient(160deg, #222d2d, #152324);
+  color: #f9f7ee; border-color: rgba(201,175,132,.33);
+  box-shadow: 0 30px 90px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.08);
+}
+:root[data-theme="luxe"] .haven-signout-dialog h2 { color: #fff8ee; }
+:root[data-theme="luxe"] .haven-signout-dialog p { color: #d5d8d0; }
+:root[data-theme="luxe"] .haven-signout-eyebrow, :root[data-theme="luxe"] .haven-signout-footnote { color: #e6c89b; }
+:root[data-theme="luxe"] .haven-signout-loading { background: rgba(255,255,255,.11); }
+:root[data-theme="luxe"] .haven-signout-loading span { background: linear-gradient(90deg,#d6ac6c,#f8dfa9); }
+:root[data-theme="luxe"] .haven-signout-icon { background: linear-gradient(145deg,#a98553,#5c3c29); }
+:root[data-theme="luxe"] .haven-signout-icon-arc { border-top-color: #e5bc80; border-right-color: #e5bc80; }
+@media (max-width: 430px) {
+  .haven-signout-dialog { padding: 32px 23px 25px; border-radius: 22px; }
+  .haven-signout-icon { width: 70px; height: 70px; border-radius: 22px; }
+  .haven-signout-icon-arc { border-radius: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar-signout, .topbar-signout svg, .topbar-signout::before,
+  .haven-signout-backdrop, .haven-signout-dialog, .haven-signout-dots,
+  .haven-signout-icon > svg { animation: none !important; transition: none !important; }
+  .haven-signout-icon-arc { animation-duration: 2.4s; }
+  .haven-signout-loading span { animation-duration: 2.4s; }
+}

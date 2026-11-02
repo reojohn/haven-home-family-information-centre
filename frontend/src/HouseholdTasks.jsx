@@ -1,4 +1,6 @@
 import PremiumSelect from './PremiumSelect.jsx';
+import ChoreKanbanBoard from './ChoreKanbanBoard.jsx';
+import {selectKanbanTasks} from './choreKanbanUtils.js';
 import React, {useEffect, useMemo, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import {
@@ -42,7 +44,7 @@ function shortChoreDescription(value){
 export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHouseholdOwner=false,today,onRun,onStatusChange}){
   const loc=useLocation();
   const [open,setOpen]=useState(false),[editing,setEditing]=useState(null),[form,setForm]=useState({...EMPTY,due_date:today});
-  const [working,setWorking]=useState(false),[activeId,setActiveId]=useState(null),[removeTarget,setRemoveTarget]=useState(null);
+  const [working,setWorking]=useState(false),[activeId,setActiveId]=useState(null),[activeAction,setActiveAction]=useState(null),[removeTarget,setRemoveTarget]=useState(null);
   const [focus,setFocus]=useState(()=>new URLSearchParams(loc.search).get('view')==='all'?'all':'mine');
   const [search,setSearch]=useState(''),[status,setStatus]=useState('active'),[priority,setPriority]=useState('all'),[assigned,setAssigned]=useState('all');
   const [sort,setSort]=useState('due'),[page,setPage]=useState(1),[perPage,setPerPage]=useState(10);
@@ -90,6 +92,11 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
   },[scopedTasks,members,search,status,priority,assigned,sort,focus,today]);
   useEffect(()=>setPage(1),[focus,search,status,priority,assigned,sort,perPage]);
   useEffect(()=>setMenuTaskId(null),[focus,search,status,priority,assigned,sort,page]);
+  // Kanban respects the member/search/priority filters, but deliberately
+  // ignores the current status tab and pagination to show all three stages.
+  const kanbanTasks=useMemo(()=>selectKanbanTasks({
+    tasks:scopedTasks,members,search,priority,assigned,sort,focus
+  }),[scopedTasks,members,search,priority,assigned,sort,focus]);
   const pageCount=Math.max(1,Math.ceil(filtered.length/perPage));
   const safePage=Math.min(page,pageCount);
   const shown=filtered.slice((safePage-1)*perPage,safePage*perPage);
@@ -117,9 +124,18 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
     }catch{}finally{setWorking(false)}
   };
   const changeStatus=async(task,next)=>{
-    if(activeId!==null || task.assigned_to!==currentUserId)return;
+    if(activeId!==null || Number(task.assigned_to)!==Number(currentUserId))return;
+    const allowed={pending:'in_progress',in_progress:'completed',completed:'pending'};
+    if(allowed[task.status]!==next || (task.status==='completed' && task.repeat!=='none'))return;
     setActiveId(task.id);
-    try{await onStatusChange(task,next)}finally{setActiveId(null)}
+    setActiveAction(next);
+    try{
+      const saved=await onStatusChange(task,next);
+      // The default Active/Overdue filters hide completed chores. Show the
+      // Completed tab after success so the member can see the final status.
+      if(saved && next==='completed')setStatus('completed');
+      if(saved && next==='pending')setStatus('active');
+    }finally{setActiveId(null);setActiveAction(null)}
   };
   const remove=async()=>{
     if(!removeTarget || working || !isHouseholdOwner)return;
@@ -214,11 +230,12 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
               </div>
             </div>
             <div className="chore-actions">
-              <span className={`chore-status chore-status-${task.status}`}>{statusLabel[task.status]}</span>
-              <div className="chore-row-buttons">
-                {canChangeStatus && task.status==='pending' && <button type="button" disabled={activeId!==null} className="chore-action-primary" onClick={()=>changeStatus(task,'in_progress')}><Play size={15}/> Start</button>}
-                {canChangeStatus && task.status==='in_progress' && <button type="button" disabled={activeId!==null} className="chore-action-primary" onClick={()=>changeStatus(task,'completed')}><Check size={15}/> Complete</button>}
-                {canChangeStatus && isDone && task.repeat==='none' && <button type="button" disabled={activeId!==null} className="chore-action-primary chore-reopen" onClick={()=>changeStatus(task,'pending')}><RotateCcw size={15}/> Reopen</button>}
+              <span className={`chore-status chore-status-${task.status}`} role="status" aria-live="polite">Status: {statusLabel[task.status]}</span>
+              <div className="chore-row-buttons" aria-busy={activeId===task.id}>
+                {canChangeStatus && activeId===task.id && <span className="chore-status-saving" role="status" aria-live="polite"><span className="chore-status-spinner" aria-hidden="true"/>{activeAction==='in_progress'?'Starting…':activeAction==='completed'?'Completing…':'Reopening…'}</span>}
+                {canChangeStatus && activeId!==task.id && task.status==='pending' && <button type="button" disabled={activeId!==null} className="chore-action-primary" onClick={()=>changeStatus(task,'in_progress')}><Play size={15}/> Start task</button>}
+                {canChangeStatus && activeId!==task.id && task.status==='in_progress' && <button type="button" disabled={activeId!==null} className="chore-action-primary" onClick={()=>changeStatus(task,'completed')}><Check size={15}/> Mark complete</button>}
+                {canChangeStatus && activeId!==task.id && isDone && task.repeat==='none' && <button type="button" disabled={activeId!==null} className="chore-action-primary chore-reopen" onClick={()=>changeStatus(task,'pending')}><RotateCcw size={15}/> Reopen</button>}
                 {!canChangeStatus&&<span className="chore-assigned-note" title={statusHint}><LockKeyhole size={13}/> View only</span>}
                 {canChangeStatus && isDone && task.repeat!=='none'&&<span className="chore-done-note"><CheckCircle2 size={15}/> Done</span>}
                 {isHouseholdOwner&&<button type="button" className="chore-icon-button chore-more-button" aria-label={`More options for ${task.title}`} aria-expanded={isMenuOpen} aria-controls={`chore-options-${task.id}`} disabled={activeId!==null} onClick={()=>setMenuTaskId(v=>v===task.id?null:task.id)}><MoreHorizontal size={19}/></button>}
@@ -240,6 +257,9 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
         <button className="btn btn-outline" disabled={safePage>=pageCount} onClick={()=>setPage(p=>p+1)}>Next <ChevronRight size={15}/></button>
       </div></div>
     </section>
+    <ChoreKanbanBoard tasks={kanbanTasks} members={members} currentUserId={currentUserId} today={today}
+      activeId={activeId} activeAction={activeAction} onStatusChange={changeStatus}
+      focus={focus} MemberAvatar={MemberAvatar}/>
     <div className="info-strip"><Info size={18}/> Only the household creator can add, assign, edit or delete chores. Each assigned family member can start, complete or reopen their own chores. Recurring chores schedule the next occurrence when completed.</div>
     {isHouseholdOwner&&open&&<div className="modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
       <div className="modal chores-modal" role="dialog" aria-modal="true" aria-labelledby="chore-modal-title"><div className="modal-heading"><div><h2 id="chore-modal-title">{editing?'Edit chore':'Add a household chore'}</h2><p>Plan something together and keep responsibilities clear.</p></div>

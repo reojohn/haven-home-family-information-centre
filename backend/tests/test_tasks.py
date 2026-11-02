@@ -61,6 +61,7 @@ def test_recurring_chore_creates_one_next_occurrence_and_keeps_history():
         r=req(c,'/tasks',payload(title='Take out trash',repeat='weekly',due_date='2026-10-22',assigned_to=owner['id']))
         assert r.status_code==200,r.text
         ident=r.json()['id']
+        assert c.patch(f'/api/tasks/{ident}/status',json={'status':'in_progress'},headers=HEADER).status_code == 200
         done=c.patch(f'/api/tasks/{ident}/status',json={'status':'completed'},headers=HEADER)
         assert done.status_code==200,done.text
         entries=c.get('/api/bootstrap').json()['tasks']
@@ -110,6 +111,7 @@ def test_only_assigned_member_can_change_status_even_if_other_member_created_tas
         assert member.patch(f'/api/tasks/{assigned["id"]}/status',json={'status':'in_progress'},headers=HEADER).status_code == 200
         assert member.patch(f'/api/tasks/{assigned["id"]}/status',json={'status':'completed'},headers=HEADER).status_code == 200
         assert member.patch(f'/api/tasks/{assigned["id"]}/status',json={'status':'pending'},headers=HEADER).status_code == 200
+        assert founder.patch(f'/api/tasks/{other["id"]}/status',json={'status':'in_progress'},headers=HEADER).status_code == 200
         assert founder.patch(f'/api/tasks/{other["id"]}/status',json={'status':'completed'},headers=HEADER).status_code == 200
         assert next(t for t in founder.get('/api/bootstrap').json()['tasks'] if t['id']==unassigned['id'])['status']=='pending'
 

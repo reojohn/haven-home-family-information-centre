@@ -184,3 +184,9 @@
 
 /* Task 7 / P3: show every item on the current page without a nested vertical scroller. */
 .chores-scroll,.chores-scroll.chore-list-compact{max-height:none!important;min-height:0!important;overflow-y:visible!important;overscroll-behavior:auto!important;}
+
+/* Chore lifecycle: separate saved status from action and show a real in-flight state. */
+.chore-status-saving{display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface-alt);color:var(--muted);font-size:.72rem;font-weight:750;white-space:nowrap}
+.chore-status-spinner{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:chore-status-spin .65s linear infinite}
+@keyframes chore-status-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.chore-status-spinner{animation:none;border-style:dotted}}

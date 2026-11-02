@@ -3655,3 +3655,22 @@ h1,h2,h3 { text-wrap: balance; }
 
 /* Task 7 / P3: keep narrow bill tables horizontally scrollable; vertical scroll belongs to the page. */
 .household-bills-scroll{max-height:none!important;min-height:0!important;overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-y:auto!important;}
+
+
+/* Login page: keep the original transparent Haven emblem, not the sidebar's
+   decorative logo frame. The old shared ::after overlay drew a faint square
+   around the logo on the dark welcome panel. Scoped to the left logo only;
+   the small sign-in-card icon and sidebar are intentionally unchanged. */
+.auth-root .auth-art .auth-brand .brand-mark.haven-logo-frame {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+.auth-root .auth-art .auth-brand .brand-mark.haven-logo-frame::before,
+.auth-root .auth-art .auth-brand .brand-mark.haven-logo-frame::after {
+  content: none;
+  display: none;
+}

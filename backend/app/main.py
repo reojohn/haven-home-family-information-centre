@@ -696,9 +696,17 @@ def change_task_status(ident: int, p: TaskStatusIn, user: User=Depends(current_u
         raise HTTPException(404, 'Item not found')
     if task.assigned_to != user.id:
         raise HTTPException(403, 'Only the family member assigned to this chore may change its status. Ask a member to assign it to you first.')
-    if task.status == 'completed' and task.repeat != 'none' and p.status != 'completed':
-        raise HTTPException(409, 'A new occurrence was already scheduled. Edit that task instead')
-    changed = task.status != p.status
+    # Enforce the two-step lifecycle on the server, not only in the UI:
+    # To do -> In progress -> Completed. A non-recurring completed chore
+    # may be reopened to To do. Repeated identical requests are harmless.
+    if task.status == p.status:
+        return serialize_task(task)
+    if task.status == 'completed' and task.repeat != 'none':
+        raise HTTPException(409, 'This recurring chore is already completed. Use its next occurrence instead')
+    next_status = {'pending': 'in_progress', 'in_progress': 'completed', 'completed': 'pending'}
+    if next_status.get(task.status) != p.status:
+        raise HTTPException(409, 'Start the chore before completing it. Use Start task, then Mark complete.')
+    changed = True
     task.status = p.status
     new_occurrence = None
     if p.status == 'completed':
