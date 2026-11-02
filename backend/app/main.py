@@ -752,6 +752,12 @@ def delete_reminder(ident:int,user:User=Depends(current_user),db:DBSession=Depen
 def create_announcement(p:AnnouncementIn,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
     obj=Announcement(household_id=user.household_id,title=p.title.strip(),content=p.content.strip())
     db.add(obj);db.commit();db.refresh(obj);return serialize_a(obj)
+@app.patch('/api/announcements/{ident}')
+def edit_announcement(ident:int,p:AnnouncementIn,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
+    obj=check_owned(db,Announcement,ident,user)
+    obj.title=p.title.strip();obj.content=p.content.strip();obj.is_demo=False
+    db.commit();return serialize_a(obj)
+
 @app.delete('/api/announcements/{ident}')
 def delete_announcement(ident:int,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
     db.delete(check_owned(db,Announcement,ident,user));db.commit();return {'ok':True}
@@ -760,6 +766,12 @@ def delete_announcement(ident:int,user:User=Depends(current_user),db:DBSession=D
 def create_contact(p:ContactIn,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
     obj=Contact(household_id=user.household_id,name=p.name.strip(),relation=p.relation.strip(),phone=p.phone.strip())
     db.add(obj);db.commit();db.refresh(obj);return serialize_c(obj)
+@app.patch('/api/contacts/{ident}')
+def edit_contact(ident:int,p:ContactIn,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
+    obj=check_owned(db,Contact,ident,user)
+    obj.name=p.name.strip();obj.relation=p.relation.strip();obj.phone=p.phone.strip();obj.is_demo=False
+    db.commit();return serialize_c(obj)
+
 @app.delete('/api/contacts/{ident}')
 def delete_contact(ident:int,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
     db.delete(check_owned(db,Contact,ident,user));db.commit();return {'ok':True}
@@ -778,6 +790,14 @@ def add_energy(p:EnergyIn,user:User=Depends(current_user),db:DBSession=Depends(g
 def create_bill(p:BillIn,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
     obj=Bill(household_id=user.household_id,title=p.title.strip(),amount=p.amount,due_date=p.due_date.isoformat(),category=p.category,notes=p.notes.strip())
     db.add(obj);db.commit();db.refresh(obj);return serialize_b(obj)
+@app.patch('/api/bills/{ident}')
+def edit_bill(ident:int,p:BillIn,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
+    obj=check_owned(db,Bill,ident,user)
+    obj.title=p.title.strip();obj.amount=p.amount;obj.due_date=p.due_date.isoformat()
+    obj.category=p.category;obj.notes=p.notes.strip();obj.is_demo=False
+    # Preserve the previously recorded paid/unpaid status and its paid timestamp.
+    db.commit();return serialize_b(obj)
+
 @app.patch('/api/bills/{ident}/status')
 def update_bill(ident:int,p:BillStatus,user:User=Depends(current_user),db:DBSession=Depends(get_db)):
     obj=check_owned(db,Bill,ident,user)

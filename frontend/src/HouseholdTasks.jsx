@@ -147,7 +147,7 @@ export default function HouseholdTasks({tasks=[],members=[],currentUserId,isHous
         {key:'pending',title:'To do',value:pending,sub:'Tasks to get started',icon:ListTodo},
         {key:'progress',title:'In progress',value:inProgress,sub:'Currently being handled',icon:Clock3},
         {key:'done',title:'Completed',value:completed,sub:'Household wins',icon:CheckCircle2},
-        {key:'late',title:'Overdue',value:overdue,sub:'Need attention',icon:AlertTriangle}
+        {key:'late',title:'Overdue',value:overdue,sub:'Included in To do / In progress',icon:AlertTriangle}
       ].map(item=><article key={item.key} className={`chores-stat chores-stat-${item.key}`}>
         <div><span>{item.title}</span><span className="chores-stat-icon"><item.icon size={19}/></span></div>
         <strong>{item.value}</strong><small>{item.sub}</small>

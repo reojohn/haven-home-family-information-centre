@@ -45,3 +45,8 @@
 
 /* Empty or demonstration phone numbers are visibly unavailable, never actionable. */
 .hic-phone-unavailable { opacity:.38; cursor:not-allowed; pointer-events:auto; }
+
+/* Task 7 / P3: the page's pagination controls list length; avoid a second vertical scroll. */
+.hic-info-scroll{max-height:none!important;min-height:0!important;overflow-y:visible!important;overscroll-behavior:auto!important;}
+.hic-info-edit{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green);cursor:pointer;}
+.hic-info-edit:hover{background:var(--surface-alt);}

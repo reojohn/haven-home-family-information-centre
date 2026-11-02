@@ -1,6 +1,6 @@
 import PremiumSelect from './PremiumSelect.jsx';
 import React, {useMemo,useRef,useState} from 'react';
-import {ChevronLeft,ChevronRight,Search,X,Phone,Trash2,Megaphone,Plus} from 'lucide-react';
+import {ChevronLeft,ChevronRight,Search,X,Phone,Trash2,Megaphone,Plus,Pencil} from 'lucide-react';
 import './HouseholdInformationLists.css';
 import {callablePhone,phoneHref} from './contactPhone.js';
 
@@ -45,7 +45,7 @@ function useLocalRecords(rows,query,perPage,matcher){
   return {filtered,pageCount:Math.max(1,Math.ceil(filtered.length/perPage))};
 }
 
-export function AnnouncementRecords({records=[],displayText,onAdd,onDelete}) {
+export function AnnouncementRecords({records=[],displayText,onAdd,onEdit,onDelete}) {
   const [query,setQuery]=useState('');
   const [page,setPage]=useState(1);
   const [pageSize,setPageSize]=useState(5);
@@ -63,6 +63,7 @@ export function AnnouncementRecords({records=[],displayText,onAdd,onDelete}) {
       <div className="announcement-card-top">
         <div className="ann-icon"><Megaphone size={20}/></div>
         <div><span className="micro-label">HOUSEHOLD UPDATE</span><h3>{displayText(a.title,a.is_demo,'Announcement')}</h3><small>{new Intl.DateTimeFormat('en-PH',{dateStyle:'medium'}).format(new Date(a.posted_at))}</small></div>
+        <button type="button" className="icon-button hic-info-edit" aria-label={`Edit announcement: ${displayText(a.title,a.is_demo,'Announcement')}`} title="Edit announcement" onClick={()=>onEdit(a)}><Pencil size={17}/></button>
         <button type="button" className="icon-button hic-info-delete" aria-label={`Remove announcement: ${displayText(a.title,a.is_demo,'Announcement')}`} onClick={()=>onDelete(a.id)}><Trash2 size={17}/></button>
       </div>
       <p>{displayText(a.content,a.is_demo)}</p>
@@ -70,7 +71,7 @@ export function AnnouncementRecords({records=[],displayText,onAdd,onDelete}) {
   </RecordsFrame>;
 }
 
-export function ContactRecords({records=[],displayText,onAdd,onDelete}) {
+export function ContactRecords({records=[],displayText,onAdd,onEdit,onDelete}) {
   const [query,setQuery]=useState('');
   const [page,setPage]=useState(1);
   const [pageSize,setPageSize]=useState(10);
@@ -90,6 +91,7 @@ export function ContactRecords({records=[],displayText,onAdd,onDelete}) {
       {!c.is_demo && callablePhone(c.phone)
         ? <a className="icon-button" href={phoneHref(c.phone)} aria-label={`Call ${displayText(c.name,c.is_demo,'contact')}`} title="Call contact"><Phone size={17}/></a>
         : <span className="icon-button hic-phone-unavailable" role="img" aria-label="Phone number unavailable for calling" title="A valid, non-demo phone number is required to call"><Phone size={17}/></span>}
+      <button type="button" className="icon-button hic-info-edit" aria-label={`Edit ${displayText(c.name,c.is_demo,'contact')}`} title="Edit contact" onClick={()=>onEdit(c)}><Pencil size={17}/></button>
       <button type="button" className="icon-button hic-info-delete" aria-label={`Remove ${displayText(c.name,c.is_demo,'contact')}`} onClick={()=>onDelete(c.id)} title="Remove contact"><Trash2 size={17}/></button>
     </div>)}</div>:<div className="hic-info-empty"><Phone size={25}/><strong>{query?'No matching contacts':'No contacts saved'}</strong><p>{query?'Try searching by name, relationship, or phone number.':'Save important family or emergency numbers.'}</p>{!query&&<button type="button" onClick={onAdd}><Plus size={16}/> Add contact</button>}{query&&<button type="button" onClick={()=>changeQuery('')}>Clear search</button>}</div>}
   </RecordsFrame>;

@@ -181,3 +181,6 @@
 
 /* Household manager role is visible but unobtrusive to regular members. */
 .chore-owner-note { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border, rgba(255,255,255,.2)); border-radius: 11px; padding: 10px 12px; color: var(--text-muted, #b7c3c5); font-size: .82rem; font-weight: 600; }
+
+/* Task 7 / P3: show every item on the current page without a nested vertical scroller. */
+.chores-scroll,.chores-scroll.chore-list-compact{max-height:none!important;min-height:0!important;overflow-y:visible!important;overscroll-behavior:auto!important;}
