@@ -1,0 +1,92 @@
+/* Form time picker: same Light / Dark / Haven Luxe palette as the navbar calendar.
+   Three independent scroll-snap wheels use native momentum on touch devices. */
+.haven-time-field-trigger {
+  width:100%; display:flex;align-items:center;justify-content:space-between;
+  gap:12px;text-align:left;cursor:pointer;
+  transition:background .18s,border-color .18s,box-shadow .18s;
+}
+.haven-time-field-trigger:hover {background:var(--surface-alt);border-color:#85b69e}
+.haven-time-field-trigger.is-open,.haven-time-field-trigger:focus-visible {
+  border-color:var(--green);box-shadow:0 0 0 4px var(--premium-ring,rgba(45,131,91,.15));
+}
+.haven-time-field-trigger:disabled {cursor:not-allowed;opacity:.6}
+.haven-time-field-value {color:var(--ink);font-weight:650}
+.haven-time-field-placeholder {color:var(--muted)}
+.haven-time-field-icons {display:inline-flex;align-items:center;gap:7px;color:var(--green)}
+.haven-time-field-icons svg:last-child {transition:transform .18s}
+.haven-time-field-trigger.is-open .haven-time-field-icons svg:last-child {transform:rotate(180deg)}
+
+.haven-nav-calendar.haven-form-time-popover {
+  position:fixed;right:auto;z-index:12010;box-sizing:border-box;
+  overflow:hidden;overscroll-behavior:contain;max-height:calc(100dvh - 20px);
+  padding:13px 14px 12px;border-radius:21px;
+}
+.haven-time-heading {display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 5px}
+.haven-time-kicker {display:block;color:var(--navcal-muted);font-size:.62rem;font-weight:800;letter-spacing:.12em}
+.haven-time-heading h2 {color:var(--navcal-panel-text);font-size:1.13rem;letter-spacing:-.04em;margin:2px 0 0}
+.haven-time-close {display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;
+  border:1px solid var(--navcal-panel-border);border-radius:11px;color:var(--navcal-panel-text);
+  background:rgba(255,255,255,.07);cursor:pointer;transition:background .16s,transform .16s}
+.haven-time-close:hover {background:var(--navcal-arrow-hover);transform:scale(1.04)}
+.haven-time-preview {margin:0 0 6px;color:var(--navcal-panel-text);text-align:center;
+  font-family:'Plus Jakarta Sans','DM Sans',sans-serif;font-size:1rem;font-weight:750;letter-spacing:.025em}
+.haven-time-wheel-wrap {--haven-time-side-padding:76px;--haven-time-visible-height:190px;
+  position:relative;margin:0 auto;overflow:hidden;border:1px solid var(--navcal-panel-border);
+  border-radius:17px;background:rgba(255,255,255,.025)}
+.haven-time-wheel-wrap::before,.haven-time-wheel-wrap::after {content:'';pointer-events:none;
+  position:absolute;z-index:3;left:0;right:0;height:49px}
+.haven-time-wheel-wrap::before {top:22px;background:linear-gradient(to bottom,var(--navcal-bg-mid),transparent);opacity:.92}
+.haven-time-wheel-wrap::after {bottom:0;background:linear-gradient(to top,var(--navcal-bg-bottom),transparent);opacity:.92}
+.haven-time-active-band {position:absolute;z-index:0;left:8px;right:8px;top:calc(22px + var(--haven-time-side-padding));
+  height:38px;border:1px solid var(--navcal-selected-border);border-radius:11px;
+  background:linear-gradient(135deg,var(--navcal-selected-top),var(--navcal-selected-bottom));
+  box-shadow:0 4px 16px var(--navcal-selected-shadow),inset 0 1px 0 rgba(255,255,255,.17)}
+.haven-time-wheels {position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;
+  padding:0 6px;z-index:1}
+.haven-time-column {min-width:0}
+.haven-time-column-label {display:flex;justify-content:center;align-items:center;height:22px;
+  color:var(--navcal-muted);font-size:.69rem;font-weight:750;letter-spacing:.035em}
+.haven-time-wheel {height:var(--haven-time-visible-height);overflow-y:auto;overscroll-behavior:contain;
+  scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
+  padding:var(--haven-time-side-padding) 0;box-sizing:border-box;scrollbar-width:none;
+  user-select:none;touch-action:pan-y;outline-offset:-2px}
+.haven-time-wheel::-webkit-scrollbar {display:none}
+.haven-time-option {height:38px;display:flex;align-items:center;justify-content:center;
+  scroll-snap-align:center;scroll-snap-stop:normal;
+  color:var(--navcal-muted);cursor:pointer;font-size:.94rem;font-weight:550;
+  font-family:'Plus Jakarta Sans','DM Sans',system-ui,sans-serif;
+  transition:color .1s,font-weight .1s}
+.haven-time-option.is-selected {color:var(--navcal-panel-text);font-size:1.01rem;font-weight:800;
+  text-shadow:0 1px 4px rgba(0,0,0,.12)}
+.haven-time-option:hover:not(.is-selected) {color:var(--navcal-panel-text)}
+.haven-time-wheel:focus-visible {outline:2px solid var(--navcal-focus);border-radius:10px}
+.haven-time-footer {display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding-top:8px;margin-top:8px;border-top:1px solid var(--navcal-panel-border)}
+.haven-time-footer button {font:inherit;font-size:.78rem;font-weight:750;border-radius:11px;
+  padding:7px 12px;min-height:34px;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}
+.haven-time-footer button:active {transform:scale(.97)}
+.haven-time-now {color:var(--navcal-today-text);border:1px solid var(--navcal-today-border);background:var(--navcal-today-bg)}
+.haven-time-now:hover {background:var(--navcal-today-bg-hover)}
+.haven-time-apply {display:inline-flex;align-items:center;gap:6px;border:1px solid var(--navcal-selected-border);
+  background:linear-gradient(125deg,var(--navcal-selected-top),var(--navcal-selected-bottom));
+  color:white;box-shadow:0 4px 14px var(--navcal-selected-shadow)}
+.haven-time-apply:hover {filter:brightness(1.13)}
+:root[data-theme="luxe"] .haven-time-field-trigger.is-open {border-color:#d4a16d;box-shadow:0 0 0 4px rgba(212,161,109,.18)}
+:root[data-theme="luxe"] .haven-time-field-icons {color:#d4a16d}
+:root[data-theme="dark"] .haven-time-field-trigger {border-color:#406052}
+@media(max-width:480px) {
+  .haven-nav-calendar.haven-form-time-popover {padding:11px 11px 10px;border-radius:19px}
+  .haven-time-wheel-wrap {border-radius:15px}
+  .haven-time-wheels {padding:0 3px}
+  .haven-time-option {font-size:.95rem}
+}
+@media(max-height:620px) {
+  /* Three visible wheel rows keep the entire dialog usable on short screens. */
+  .haven-time-wheel-wrap {--haven-time-side-padding:38px;--haven-time-visible-height:114px}
+  .haven-time-wheel-wrap::before,.haven-time-wheel-wrap::after {height:30px}
+  .haven-time-heading h2 {font-size:1.03rem}
+  .haven-time-footer {margin-top:6px;padding-top:6px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .haven-form-time-popover,.haven-time-close,.haven-time-option,.haven-time-footer button {animation:none!important;transition:none!important}
+}

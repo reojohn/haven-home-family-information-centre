@@ -3674,3 +3674,40 @@ h1,h2,h3 { text-wrap: balance; }
   content: none;
   display: none;
 }
+
+/* Back-to-calendar affordance: look and behave like a real navigation button.
+   Scoped to the reminder create/detail routes; other back links remain unchanged. */
+.calendar-back-button {
+  min-height: 42px;
+  padding: 9px 15px;
+  border-radius: 12px;
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--green);
+  box-shadow: 0 4px 14px rgba(13, 55, 40, .08);
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease,
+              transform .18s ease, box-shadow .18s ease;
+}
+.back-link.calendar-back-button:hover {
+  color: var(--green);
+  background: var(--surface-alt);
+  border-color: var(--green);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(13, 55, 40, .13);
+}
+.calendar-back-button:active { transform: translateY(0); }
+:root[data-theme="luxe"] .calendar-back-button {
+  color: #fff4e6;
+  background: rgba(24, 39, 32, .58);
+  border-color: rgba(255, 236, 199, .35);
+  box-shadow: 0 6px 20px rgba(8, 18, 14, .2);
+}
+:root[data-theme="luxe"] .calendar-back-button:hover {
+  color: #fff4e6;
+  background: rgba(255, 236, 199, .17);
+  border-color: rgba(255, 236, 199, .7);
+}
+@media (prefers-reduced-motion: reduce) {
+  .calendar-back-button { transition: none; }
+  .calendar-back-button:hover { transform: none; }
+}

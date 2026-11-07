@@ -59,17 +59,17 @@ export default function ChoreKanbanBoard({tasks=[],members=[],today,currentUserI
     if(next)setMobileStage(previous=>previous===next?previous:next);
   };
 
-  return <section className="chore-kanban panel" aria-label="Collapsible household Kanban progress board">
+  return <section className="chore-kanban panel" aria-label="Collapsible Family Task Tracker">
     <button className="chore-kanban-toggle" type="button" aria-expanded={expanded} aria-controls={panelId} onClick={()=>setExpanded(value=>!value)}>
       <span className="chore-kanban-toggle-icon"><Columns3 size={22}/></span>
       <span className="chore-kanban-toggle-copy">
         <span className="chore-kanban-eyebrow">VISUAL PROGRESS TRACKER</span>
-        <strong>Kanban Progress Board</strong>
-        <span>Follow chores from To do to Completed at a glance.</span>
+        <strong>Family Task Tracker</strong>
+        <span>Follow household tasks from To do to Completed, all in one place.</span>
       </span>
       <span className="chore-kanban-toggle-right">
         <span className="chore-kanban-mini-stages" aria-hidden="true"><i/><i/><i/></span>
-        <span className="chore-kanban-toggle-label">{expanded?'Hide board':'Show board'}</span>
+        <span className="chore-kanban-toggle-label">{expanded?'Close tracker':'View tasks'}</span>
         <ChevronDown size={19} className={`chore-kanban-chevron ${expanded?'is-expanded':''}`}/>
       </span>
     </button>
@@ -84,7 +84,7 @@ export default function ChoreKanbanBoard({tasks=[],members=[],today,currentUserI
           <div className="chore-kanban-progress-copy"><strong>Household momentum</strong><span>{done} of {count} finished</span></div>
         </div>
       </div>
-      <div className="chore-kanban-mobile-navigation" role="group" aria-label="Jump to Kanban stage">
+      <div className="chore-kanban-mobile-navigation" role="group" aria-label="Jump to task stage">
         {STAGES.map(stage=><button key={stage.key} type="button"
           className={`chore-kanban-stage-shortcut chore-kanban-stage-shortcut-${stage.key} ${mobileStage===stage.key?'is-selected':''}`}
           aria-pressed={mobileStage===stage.key} onClick={()=>goToStage(stage.key)}>

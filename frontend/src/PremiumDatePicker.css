@@ -1,0 +1,61 @@
+/* Native input[type=date] popovers are rendered by the browser and cannot be
+   themed consistently. Form date controls reuse the existing navbar calendar. */
+.haven-date-field-trigger {
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;text-align:left;cursor:pointer;
+  transition:border-color .18s,background .18s,box-shadow .18s;
+}
+.haven-date-field-trigger:hover {border-color:#85b69e;background:var(--surface-alt)}
+.haven-date-field-trigger.is-open,
+.haven-date-field-trigger:focus-visible {
+  border-color:var(--green);box-shadow:0 0 0 4px var(--premium-ring,rgba(55,141,94,.17));
+}
+.haven-date-field-value {font-weight:600;color:var(--ink)}
+.haven-date-field-placeholder {color:var(--muted)}
+.haven-date-field-icons {display:inline-flex;align-items:center;gap:7px;color:var(--green);opacity:.9}
+.haven-date-field-trigger.is-open .haven-date-field-icons svg:last-child {transform:rotate(180deg)}
+.haven-date-field-icons svg:last-child {transition:transform .2s ease}
+.haven-date-field-trigger:disabled {opacity:.6;cursor:not-allowed}
+.haven-nav-calendar.haven-form-date-popover {
+  position:fixed;right:auto;z-index:12000;
+  box-sizing:border-box;padding:13px 14px 12px;border-radius:21px;
+  overflow:hidden;overscroll-behavior:contain;max-height:calc(100dvh - 20px);
+}
+.haven-form-date-popover .haven-nav-calendar-head {margin:2px 0 9px}
+.haven-form-date-popover .haven-nav-calendar-head h2 {font-size:1.2rem}
+.haven-form-date-popover .haven-nav-calendar-weekdays {margin-bottom:6px}
+.haven-form-date-popover .haven-nav-calendar-grid {gap:3px 3px}
+.haven-form-date-popover .haven-nav-calendar-arrow {
+  width:33px;height:33px;flex-basis:33px;
+}
+.haven-form-date-popover .haven-nav-calendar-day {
+  aspect-ratio:auto;height:34px;min-height:34px;font-size:.84rem;
+}
+.haven-form-date-popover .haven-nav-calendar-footer {margin-top:9px;padding-top:8px}
+.haven-form-date-popover .haven-form-date-hint {
+  color:var(--navcal-muted);font-size:.67rem;line-height:1.45;max-width:68%;
+}
+.haven-form-date-popover .haven-nav-calendar-day:disabled {cursor:not-allowed;opacity:.25}
+:root[data-theme="dark"] .haven-date-field-trigger {border-color:#406052}
+:root[data-theme="luxe"] .haven-date-field-trigger.is-open {border-color:#d4a16d;box-shadow:0 0 0 4px rgba(212,161,109,.18)}
+:root[data-theme="luxe"] .haven-date-field-icons {color:#d4a16d}
+@media(max-width:480px) {
+  .haven-nav-calendar.haven-form-date-popover {padding:11px 10px 10px;border-radius:19px}
+  .haven-form-date-popover .haven-nav-calendar-head {margin-bottom:7px}
+  .haven-form-date-popover .haven-nav-calendar-day {height:33px;min-height:33px;font-size:.82rem}
+  .haven-form-date-popover .haven-nav-calendar-weekdays span {font-size:.58rem}
+  .haven-form-date-popover .haven-form-date-hint {font-size:.6rem;max-width:67%}
+}
+
+@media(max-height:530px) {
+  /* A six-week month still fits without an outer popup scrollbar. */
+  .haven-form-date-popover .haven-nav-calendar-day {height:28px;min-height:28px}
+  .haven-form-date-popover .haven-nav-calendar-head {margin-bottom:5px}
+  .haven-form-date-popover .haven-nav-calendar-footer {margin-top:6px;padding-top:6px}
+}
+@media(max-height:420px) {
+  .haven-form-date-popover .haven-nav-calendar-day {height:24px;min-height:24px;font-size:.72rem}
+  .haven-form-date-popover .haven-nav-calendar-weekdays {margin-bottom:3px}
+  .haven-form-date-popover .haven-nav-calendar-grid {row-gap:2px}
+  .haven-form-date-popover .haven-nav-calendar-head h2 {font-size:1rem}
+}
